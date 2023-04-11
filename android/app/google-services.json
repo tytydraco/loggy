@@ -29,6 +29,13 @@
             {
               "client_id": "682288113146-lehul9oniik39miiu0cn949f4njst6ic.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "682288113146-1rq864qnhjlei236njks1hkt0k0hd4o2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.draco.loggy"
+              }
             }
           ]
         }
