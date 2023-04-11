@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:loggy/src/data/storage_base.dart';
-import 'package:loggy/src/exceptions/initialization_exception.dart';
 import 'package:loggy/src/models/entry.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,15 +19,13 @@ class LocalStorage extends StorageBase {
     _isInitialized = true;
   }
 
-  void _ensureInitialized() {
-    if (!_isInitialized) {
-      throw InitializationException('Must call init() first.');
-    }
+  Future<void> _ensureInitialized() async {
+    if (!_isInitialized) await init();
   }
 
   @override
   Future<List<Entry>> getAllEntries() async {
-    _ensureInitialized();
+    await _ensureInitialized();
 
     final allEntriesRaw = _sharedPrefs.getStringList(prefKey) ?? [];
     return allEntriesRaw.map((e) {
@@ -39,7 +36,7 @@ class LocalStorage extends StorageBase {
 
   @override
   Future<void> setAllEntries(List<Entry> entries) async {
-    _ensureInitialized();
+    await _ensureInitialized();
 
     final jsonEntries = entries.map((e) {
       final json = e.toJson();
