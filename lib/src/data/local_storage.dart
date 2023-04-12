@@ -6,8 +6,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// A local implementation of [StorageBase] using shared preferences.
 class LocalStorage extends StorageBase {
-  /// The shared preferences key.
-  static const prefKey = 'entries';
+  /// The shared preferences key for the entries.
+  static const entriesPrefKey = 'entries';
+
+  /// The shared preferences key for the trackables.
+  static const trackablesPrefKey = 'trackables';
 
   late SharedPreferences _sharedPrefs;
 
@@ -20,7 +23,7 @@ class LocalStorage extends StorageBase {
 
   @override
   Future<Set<Entry>> getAllEntries() async {
-    final allEntriesRaw = _sharedPrefs.getStringList(prefKey) ?? [];
+    final allEntriesRaw = _sharedPrefs.getStringList(entriesPrefKey) ?? [];
     final allEntries = allEntriesRaw.map((e) {
       final json = jsonDecode(e) as Map<String, dynamic>;
       return Entry.fromJson(json);
@@ -44,6 +47,56 @@ class LocalStorage extends StorageBase {
       return jsonEncode(json);
     }).toList();
 
-    await _sharedPrefs.setStringList(prefKey, jsonEntries);
+    await _sharedPrefs.setStringList(entriesPrefKey, jsonEntries);
+  }
+
+  @override
+  Future<void> addEntry(Entry entry) async {
+    final allEntries = await getAllEntries();
+    allEntries.add(entry);
+    await setAllEntries(allEntries);
+
+    await super.addEntry(entry);
+  }
+
+  @override
+  Future<void> deleteEntry(Entry entry) async {
+    final allEntries = await getAllEntries();
+    allEntries.remove(entry);
+    await setAllEntries(allEntries);
+
+    await super.deleteEntry(entry);
+  }
+
+  @override
+  Future<Set<String>> getAllTrackables() async {
+    final allTrackables = _sharedPrefs.getStringList(trackablesPrefKey) ?? [];
+
+    trackables
+      ..clear()
+      ..addAll(allTrackables.toSet());
+
+    return super.getAllTrackables();
+  }
+
+  @override
+  Future<void> setAllTrackables(Set<String> newTrackables) async {
+    await super.setAllTrackables(newTrackables);
+
+    await _sharedPrefs.setStringList(trackablesPrefKey, newTrackables.toList());
+  }
+
+  @override
+  Future<void> addTrackable(String trackable) async {
+    final allTrackables = await getAllTrackables();
+    allTrackables.add(trackable);
+    await setAllTrackables(allTrackables);
+  }
+
+  @override
+  Future<void> deleteTrackable(String trackable) async {
+    final allTrackables = await getAllTrackables();
+    allTrackables.remove(trackable);
+    await setAllTrackables(allTrackables);
   }
 }
