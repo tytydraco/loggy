@@ -6,7 +6,7 @@ import 'package:loggy/src/models/entry.dart';
 abstract class StorageBase {
   /// Up-to-date list of entries sorted by timestamp.
   Set<Entry> entries =
-      SplayTreeSet<Entry>((e1, e2) => e1.timestamp.compareTo(e2.timestamp));
+      SplayTreeSet<Entry>((e1, e2) => e2.timestamp.compareTo(e1.timestamp));
 
   /// Perform any necessary setup.
   Future<void> init();
