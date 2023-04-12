@@ -26,13 +26,20 @@ class LocalStorage extends StorageBase {
       return Entry.fromJson(json);
     }).toList()
       ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
-    return allEntries.toSet();
+
+    entries
+      ..clear()
+      ..addAll(allEntries.toSet());
+
+    return super.getAllEntries();
   }
 
   @override
-  Future<void> setAllEntries(Set<Entry> entries) async {
-    entries.toList().sort((a, b) => a.timestamp.compareTo(b.timestamp));
-    final jsonEntries = entries.map((e) {
+  Future<void> setAllEntries(Set<Entry> newEntries) async {
+    await super.setAllEntries(newEntries);
+
+    newEntries.toList().sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    final jsonEntries = newEntries.map((e) {
       final json = e.toJson();
       return jsonEncode(json);
     }).toList();
