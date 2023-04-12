@@ -19,7 +19,17 @@ class RatingItem extends StatelessWidget {
       height: 50,
       decoration: BoxDecoration(
         color: rating.color,
-        shape: BoxShape.circle,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Center(
+        child: Text(
+          rating.value.toString(),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            color: Colors.white,
+          ),
+        ),
       ),
     );
   }
