@@ -78,27 +78,16 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Home'),
       ),
-      body: FutureBuilder<List<Entry>>(
-        future: _storage.getAllEntries(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final entries = snapshot.data ?? [];
-
-            return ListView.builder(
-              itemCount: entries.length,
-              padding: const EdgeInsets.all(16),
-              itemBuilder: (_, index) {
-                final entry = entries[index];
-                return EntryItem(
-                  entry,
-                  onEdit: () => _editEntry(entry),
-                  onDelete: () => _deleteEntry(entry),
-                );
-              },
-            );
-          } else {
-            return const CircularProgressIndicator();
-          }
+      body: ListView.builder(
+        itemCount: _storage.entries.length,
+        padding: const EdgeInsets.all(16),
+        itemBuilder: (_, index) {
+          final entry = _storage.entries.elementAt(index);
+          return EntryItem(
+            entry,
+            onEdit: () => _editEntry(entry),
+            onDelete: () => _deleteEntry(entry),
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(

@@ -1,18 +1,35 @@
+import 'dart:collection';
+
 import 'package:loggy/src/models/entry.dart';
 
 /// Storage source to store entries.
 abstract class StorageBase {
+  /// Up-to-date list of entries sorted by timestamp.
+  Set<Entry> entries =
+      SplayTreeSet<Entry>((e1, e2) => e1.timestamp.compareTo(e2.timestamp));
+
+  /// Perform any necessary setup.
+  Future<void> init();
+
   /// Return a list of all stored entries.
-  Future<List<Entry>> getAllEntries();
+  Future<Set<Entry>> getAllEntries() async {
+    return entries.toSet();
+  }
 
   /// Sets all stored entries.
-  Future<void> setAllEntries(List<Entry> entries);
+  Future<void> setAllEntries(Set<Entry> entries) async {
+    entries
+      ..clear()
+      ..addAll(entries);
+  }
 
   /// Add a new entry.
   Future<void> addEntry(Entry entry) async {
     final allEntries = await getAllEntries();
     allEntries.add(entry);
     await setAllEntries(allEntries);
+
+    entries.add(entry);
   }
 
   /// Delete an entry.
@@ -20,5 +37,7 @@ abstract class StorageBase {
     final allEntries = await getAllEntries();
     allEntries.remove(entry);
     await setAllEntries(allEntries);
+
+    entries.remove(entry);
   }
 }

@@ -11,35 +11,27 @@ class LocalStorage extends StorageBase {
 
   late SharedPreferences _sharedPrefs;
 
-  var _isInitialized = false;
-
   /// Prepare the shared preferences.
+  @override
   Future<void> init() async {
     _sharedPrefs = await SharedPreferences.getInstance();
-    _isInitialized = true;
-  }
-
-  Future<void> _ensureInitialized() async {
-    if (!_isInitialized) await init();
+    entries.addAll(await getAllEntries());
   }
 
   @override
-  Future<List<Entry>> getAllEntries() async {
-    await _ensureInitialized();
-
+  Future<Set<Entry>> getAllEntries() async {
     final allEntriesRaw = _sharedPrefs.getStringList(prefKey) ?? [];
-    return allEntriesRaw.map((e) {
+    final allEntries = allEntriesRaw.map((e) {
       final json = jsonDecode(e) as Map<String, dynamic>;
       return Entry.fromJson(json);
     }).toList()
       ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    return allEntries.toSet();
   }
 
   @override
-  Future<void> setAllEntries(List<Entry> entries) async {
-    await _ensureInitialized();
-
-    entries.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+  Future<void> setAllEntries(Set<Entry> entries) async {
+    entries.toList().sort((a, b) => a.timestamp.compareTo(b.timestamp));
     final jsonEntries = entries.map((e) {
       final json = e.toJson();
       return jsonEncode(json);
