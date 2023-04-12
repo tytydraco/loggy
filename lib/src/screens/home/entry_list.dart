@@ -17,10 +17,15 @@ class EntryList extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.builder(
       itemCount: entries.length,
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(16),
       itemBuilder: (_, index) {
         final entry = entries[index];
-        return EntryItem(entry);
+        return EntryItem(
+          entry,
+          onTap: () {
+            // TODO(tytydraco): launch edit screen
+          },
+        );
       },
     );
   }

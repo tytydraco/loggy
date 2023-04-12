@@ -50,8 +50,8 @@ class _RatingToggleGroupState extends State<RatingToggleGroup> {
           _selectedIndex = index;
         });
       },
-      borderRadius: BorderRadius.circular(16),
       borderWidth: 2,
+      borderColor: Colors.transparent,
       selectedBorderColor: Colors.blue,
       children: widget.ratings.map(_toToggleButtonItem).toList(),
     );
