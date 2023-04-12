@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:loggy/src/data/constants.dart';
+import 'package:loggy/src/widgets/rating_toggle_group.dart';
 
 /// Add a new entry.
 class NewScreen extends StatefulWidget {
@@ -16,9 +18,23 @@ class _NewScreenState extends State<NewScreen> {
       appBar: AppBar(
         title: const Text('New'),
       ),
-      body: const Center(),
+      body: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          children: const [
+            Center(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: RatingToggleGroup(defaultRatingScale),
+              ),
+            ),
+          ],
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () { /* todo */ },
+        onPressed: () {
+          /* todo */
+        },
         tooltip: 'Save',
         child: const Icon(Icons.save),
       ),

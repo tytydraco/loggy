@@ -15,8 +15,7 @@ class EntryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final date = DateTime.fromMicrosecondsSinceEpoch(entry.timestamp);
-    final dateString = DateFormat.yMMMMd(date).format(date);
+    final dateString = DateFormat.yMMMMd().format(entry.timestamp);
 
     return Card(
       margin: const EdgeInsets.all(8),
