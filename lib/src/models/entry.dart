@@ -36,8 +36,9 @@ class Entry {
   bool operator ==(Object other) =>
       other is Entry &&
       other.runtimeType == runtimeType &&
-      other.timestamp == timestamp;
+      other.timestamp == timestamp &&
+      other.rating == rating;
 
   @override
-  int get hashCode => timestamp.hashCode;
+  int get hashCode => Object.hash(timestamp, rating);
 }

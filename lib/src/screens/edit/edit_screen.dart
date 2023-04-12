@@ -57,64 +57,105 @@ class _EditScreenState extends State<EditScreen> {
     return selectedDate;
   }
 
+  Future<bool> _confirmExit() async {
+    final editedEntry = _getEditedEntry();
+
+    // Exit if no changes were made.
+    if (widget.initialEntry != null && editedEntry == widget.initialEntry) {
+      return true;
+    }
+
+    final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Confirm exit'),
+            content: const Text(
+              'Are you sure you want to exit without saving?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Exit'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (confirmed && context.mounted) return true;
+
+    return false;
+  }
+
+  Entry? _getEditedEntry() {
+    if (_ratingIndex != null) {
+      return Entry(
+        timestamp: _date,
+        rating: defaultRatingScale[_ratingIndex!],
+      );
+    }
+
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          children: [
-            // Date and time.
-            OutlinedButton(
-              onPressed: () async {
-                final newDate = await _selectTimestamp(_date);
-                if (newDate != null) {
-                  setState(() {
-                    _date = newDate;
-                  });
-                }
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Text(_dateStringFormatter.format(_date)),
+    return WillPopScope(
+      onWillPop: _confirmExit,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Edit'),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            children: [
+              // Date and time.
+              OutlinedButton(
+                onPressed: () async {
+                  final newDate = await _selectTimestamp(_date);
+                  if (newDate != null) {
+                    setState(() {
+                      _date = newDate;
+                    });
+                  }
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Text(_dateStringFormatter.format(_date)),
+                ),
               ),
-            ),
 
-            // Rating selection.
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: RatingToggleGroup(
-                    defaultRatingScale,
-                    initialSelection: _ratingIndex,
-                    onSelected: (index) => _ratingIndex = index,
+              // Rating selection.
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: RatingToggleGroup(
+                      defaultRatingScale,
+                      initialSelection: _ratingIndex,
+                      onSelected: (index) => _ratingIndex = index,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (_ratingIndex != null) {
-            final entry = Entry(
-              timestamp: _date,
-              rating: defaultRatingScale[_ratingIndex!],
-            );
-
-            Navigator.pop(context, entry);
-          } else {
-            Navigator.pop(context);
-          }
-        },
-        tooltip: 'Save',
-        child: const Icon(Icons.save),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            final editedEntry = _getEditedEntry();
+            if (editedEntry == null) Navigator.pop(context);
+            Navigator.pop(context, editedEntry);
+          },
+          tooltip: 'Save',
+          child: const Icon(Icons.save),
+        ),
       ),
     );
   }
