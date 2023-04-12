@@ -1,6 +1,9 @@
 import 'dart:ui';
 
+import 'package:meta/meta.dart';
+
 /// An entry rating.
+@immutable
 class Rating {
   /// Creates a new [Rating].
   const Rating({
@@ -35,4 +38,15 @@ class Rating {
       'color': color.value,
     };
   }
+
+  @override
+  bool operator ==(Object other) =>
+      other is Rating &&
+      other.runtimeType == runtimeType &&
+      other.value == value &&
+      other.name == name &&
+      other.color.value == color.value;
+
+  @override
+  int get hashCode => Object.hash(value, name, color.value);
 }

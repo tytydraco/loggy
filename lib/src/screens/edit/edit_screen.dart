@@ -4,18 +4,25 @@ import 'package:loggy/src/data/constants.dart';
 import 'package:loggy/src/models/entry.dart';
 import 'package:loggy/src/widgets/rating_toggle_group.dart';
 
-/// Add a new entry.
-class NewScreen extends StatefulWidget {
-  /// Creates a new [NewScreen].
-  const NewScreen({super.key});
+/// Edit an entry or add a new one.
+class EditScreen extends StatefulWidget {
+  /// Creates a new [EditScreen].
+  const EditScreen({super.key, this.initialEntry});
+
+  /// The initial entry to edit, if specified.
+  final Entry? initialEntry;
 
   @override
-  State<NewScreen> createState() => _NewScreenState();
+  State<EditScreen> createState() => _EditScreenState();
 }
 
-class _NewScreenState extends State<NewScreen> {
-  DateTime _date = DateTime.now();
-  int? _ratingIndex;
+class _EditScreenState extends State<EditScreen> {
+  late int? _ratingIndex =
+      widget.initialEntry != null ? widget.initialEntry!.rating.value : null;
+  late DateTime _date = widget.initialEntry != null
+      ? widget.initialEntry!.timestamp
+      : DateTime.now();
+
   final _dateStringFormatter = DateFormat.yMMMMd().add_jm();
 
   Future<DateTime?> _selectTimestamp(DateTime initial) async {
@@ -54,7 +61,7 @@ class _NewScreenState extends State<NewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('New'),
+        title: const Text('Edit'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8),
@@ -84,6 +91,7 @@ class _NewScreenState extends State<NewScreen> {
                   scrollDirection: Axis.horizontal,
                   child: RatingToggleGroup(
                     defaultRatingScale,
+                    initialSelection: _ratingIndex,
                     onSelected: (index) => _ratingIndex = index,
                   ),
                 ),

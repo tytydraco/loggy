@@ -31,17 +31,20 @@ class LocalStorage extends StorageBase {
     return allEntriesRaw.map((e) {
       final json = jsonDecode(e) as Map<String, dynamic>;
       return Entry.fromJson(json);
-    }).toList();
+    }).toList()
+      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
   }
 
   @override
   Future<void> setAllEntries(List<Entry> entries) async {
     await _ensureInitialized();
 
+    entries.sort((a, b) => a.timestamp.compareTo(b.timestamp));
     final jsonEntries = entries.map((e) {
       final json = e.toJson();
       return jsonEncode(json);
     }).toList();
+
     await _sharedPrefs.setStringList(prefKey, jsonEntries);
   }
 }

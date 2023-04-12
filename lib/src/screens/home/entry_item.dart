@@ -8,7 +8,8 @@ class EntryItem extends StatelessWidget {
   /// Creates a new [EntryItem].
   const EntryItem(
     this.entry, {
-    this.onTap,
+    this.onEdit,
+    this.onDelete,
     super.key,
   });
 
@@ -16,7 +17,10 @@ class EntryItem extends StatelessWidget {
   final Entry entry;
 
   /// Handler for when this entry is tapped.
-  final void Function()? onTap;
+  final void Function()? onEdit;
+
+  /// Handler for when this entry is long-pressed.
+  final void Function()? onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +30,8 @@ class EntryItem extends StatelessWidget {
       margin: const EdgeInsets.all(8),
       child: InkWell(
         splashColor: entry.rating.color,
-        onTap: onTap,
+        onTap: onEdit,
+        onLongPress: onDelete,
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
