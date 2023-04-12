@@ -7,11 +7,15 @@ class RatingToggleGroup extends StatefulWidget {
   /// Creates a new [RatingToggleGroup].
   const RatingToggleGroup(
     this.ratings, {
+    this.onSelected,
     super.key,
   });
 
   /// The list of selectable ratings.
   final List<Rating> ratings;
+
+  /// Called when a rating is selected.
+  final void Function(int index)? onSelected;
 
   @override
   State<RatingToggleGroup> createState() => _RatingToggleGroupState();
@@ -35,6 +39,8 @@ class _RatingToggleGroupState extends State<RatingToggleGroup> {
     return ToggleButtons(
       isSelected: selected,
       onPressed: (index) {
+        widget.onSelected?.call(index);
+
         setState(() {
           _selectedIndex = index;
         });
