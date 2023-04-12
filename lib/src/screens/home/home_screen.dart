@@ -18,10 +18,15 @@ class _HomeScreenState extends State<HomeScreen> {
   late final _storage = context.read<StorageBase>();
 
   Future<void> _addNewEntry() async {
-    await Navigator.push(
+    final entry = await Navigator.push(
       context,
       MaterialPageRoute<Entry>(builder: (context) => const NewScreen()),
     );
+    
+    if (entry != null) {
+      await _storage.addEntry(entry);
+      setState(() {});
+    }
   }
 
   @override

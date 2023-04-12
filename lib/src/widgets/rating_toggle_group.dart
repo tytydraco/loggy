@@ -7,12 +7,16 @@ class RatingToggleGroup extends StatefulWidget {
   /// Creates a new [RatingToggleGroup].
   const RatingToggleGroup(
     this.ratings, {
+    this.initialSelection,
     this.onSelected,
     super.key,
   });
 
   /// The list of selectable ratings.
   final List<Rating> ratings;
+
+  /// The initially selected rating index.
+  final int? initialSelection;
 
   /// Called when a rating is selected.
   final void Function(int index)? onSelected;
@@ -22,7 +26,7 @@ class RatingToggleGroup extends StatefulWidget {
 }
 
 class _RatingToggleGroupState extends State<RatingToggleGroup> {
-  int? _selectedIndex;
+  late var _selectedIndex = widget.initialSelection;
 
   Widget _toToggleButtonItem(Rating rating) {
     return Padding(
@@ -39,13 +43,16 @@ class _RatingToggleGroupState extends State<RatingToggleGroup> {
     return ToggleButtons(
       isSelected: selected,
       onPressed: (index) {
-        widget.onSelected?.call(index);
+        if (widget.onSelected == null) return;
 
+        widget.onSelected?.call(index);
         setState(() {
           _selectedIndex = index;
         });
       },
-      renderBorder: false,
+      borderRadius: BorderRadius.circular(16),
+      borderWidth: 2,
+      selectedBorderColor: Colors.blue,
       children: widget.ratings.map(_toToggleButtonItem).toList(),
     );
   }

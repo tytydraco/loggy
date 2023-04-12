@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:loggy/src/data/constants.dart';
+import 'package:loggy/src/models/entry.dart';
 import 'package:loggy/src/widgets/rating_toggle_group.dart';
 
 /// Add a new entry.
@@ -13,13 +14,14 @@ class NewScreen extends StatefulWidget {
 }
 
 class _NewScreenState extends State<NewScreen> {
-  DateTime date = DateTime.now();
-  final dateStringFormatter = DateFormat.yMMMMd().add_jm();
+  DateTime _date = DateTime.now();
+  int? _ratingIndex;
+  final _dateStringFormatter = DateFormat.yMMMMd().add_jm();
 
   Future<DateTime?> _selectTimestamp(DateTime initial) async {
     final newDate = await showDatePicker(
       context: context,
-      initialDate: date,
+      initialDate: _date,
       firstDate: DateTime(0),
       lastDate: DateTime.now(),
     );
@@ -30,7 +32,7 @@ class _NewScreenState extends State<NewScreen> {
 
     final newTime = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.fromDateTime(date),
+      initialTime: TimeOfDay.fromDateTime(_date),
     );
 
     if (newTime == null) return null;
@@ -61,26 +63,29 @@ class _NewScreenState extends State<NewScreen> {
             // Date and time.
             OutlinedButton(
               onPressed: () async {
-                final newDate = await _selectTimestamp(date);
+                final newDate = await _selectTimestamp(_date);
                 if (newDate != null) {
                   setState(() {
-                    date = newDate;
+                    _date = newDate;
                   });
                 }
               },
               child: Padding(
                 padding: const EdgeInsets.all(8),
-                child: Text(dateStringFormatter.format(date)),
+                child: Text(_dateStringFormatter.format(_date)),
               ),
             ),
 
             // Rating selection.
-            const Center(
+            Center(
               child: Padding(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  child: RatingToggleGroup(defaultRatingScale),
+                  child: RatingToggleGroup(
+                    defaultRatingScale,
+                    onSelected: (index) => _ratingIndex = index,
+                  ),
                 ),
               ),
             ),
@@ -89,7 +94,16 @@ class _NewScreenState extends State<NewScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          /* todo */
+          if (_ratingIndex != null) {
+            final entry = Entry(
+              timestamp: _date,
+              rating: defaultRatingScale[_ratingIndex!],
+            );
+
+            Navigator.pop(context, entry);
+          } else {
+            Navigator.pop(context);
+          }
         },
         tooltip: 'Save',
         child: const Icon(Icons.save),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:loggy/src/data/constants.dart';
 import 'package:loggy/src/models/entry.dart';
+import 'package:loggy/src/widgets/rating_toggle_group.dart';
 
 /// A small entry preview item.
 class EntryItem extends StatelessWidget {
@@ -24,7 +26,10 @@ class EntryItem extends StatelessWidget {
         child: Column(
           children: [
             // Rating.
-            const Text('todo'),
+            RatingToggleGroup(
+              defaultRatingScale,
+              initialSelection: entry.rating.value,
+            ),
 
             // Date.
             Text(dateString),
