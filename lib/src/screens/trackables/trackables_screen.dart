@@ -27,9 +27,23 @@ class _TrackablesScreenState extends State<TrackablesScreen>
       appBar: AppBar(
         title: const Text('Trackables'),
       ),
-      body: TrackablesList(
-        trackables: {},
-        onTap: (trackable) {},
+      body: FutureBuilder<Set<String>>(
+        future: _storage.getAllTrackables(),
+        builder: (_, snapshot) {
+          if (snapshot.hasData) {
+            final trackables = snapshot.data ?? {};
+            return TrackablesList(
+              trackables: trackables,
+              onTap: (trackable) {
+                // TODO(tytydraco): Edit
+              },
+            );
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async => _addNewTrackable(),
