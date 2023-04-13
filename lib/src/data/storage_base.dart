@@ -6,10 +6,10 @@ import 'package:loggy/src/models/entry.dart';
 abstract class StorageBase {
   /// Up-to-date set of entries sorted by timestamp.
   Set<Entry> entries =
-      SplayTreeSet<Entry>((e1, e2) => e2.timestamp.compareTo(e1.timestamp));
+      SplayTreeSet((e1, e2) => e2.timestamp.compareTo(e1.timestamp));
 
-  /// Up-to-date set of trackables.
-  Set<String> trackables = {};
+  /// Up-to-date set of trackables sorted alphabetically.
+  Set<String> trackables = SplayTreeSet((t1, t2) => t1.compareTo(t2));
 
   /// Perform any necessary setup.
   Future<void> init();
