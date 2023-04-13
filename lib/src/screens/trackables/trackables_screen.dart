@@ -24,7 +24,7 @@ class _TrackablesScreenState extends State<TrackablesScreen>
         if (initialTrackable != null) editController.text = initialTrackable;
 
         return AlertDialog(
-          title: const Text('Edit'),
+          title: Text(initialTrackable == null ? 'Add' : 'Edit'),
           content: TextField(
             controller: editController,
             onSubmitted: (text) => Navigator.pop(context, text),
