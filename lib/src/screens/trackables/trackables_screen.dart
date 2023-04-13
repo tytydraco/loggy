@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loggy/src/data/storage_base.dart';
+import 'package:loggy/src/screens/trackables/trackables_list.dart';
 import 'package:provider/provider.dart';
 
 /// Manage trackable activities.
@@ -26,7 +27,10 @@ class _TrackablesScreenState extends State<TrackablesScreen>
       appBar: AppBar(
         title: const Text('Trackables'),
       ),
-      body: const Placeholder(),
+      body: TrackablesList(
+        trackables: {},
+        onTap: (trackable) {},
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async => _addNewTrackable(),
         tooltip: 'New',
