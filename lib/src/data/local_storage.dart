@@ -18,7 +18,7 @@ class LocalStorage extends StorageBase {
   @override
   Future<void> init() async {
     _sharedPrefs = await SharedPreferences.getInstance();
-    entries.addAll(await getAllEntries());
+    await super.init();
   }
 
   @override

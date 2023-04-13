@@ -12,7 +12,10 @@ abstract class StorageBase {
   Set<String> trackables = SplayTreeSet((t1, t2) => t1.compareTo(t2));
 
   /// Perform any necessary setup.
-  Future<void> init();
+  Future<void> init() async {
+    entries.addAll(await getAllEntries());
+    trackables.addAll(await getAllTrackables());
+  }
 
   /// Return a set of all stored entries.
   Future<Set<Entry>> getAllEntries() async {
