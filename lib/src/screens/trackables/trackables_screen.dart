@@ -11,13 +11,17 @@ class TrackablesScreen extends StatefulWidget {
   State<TrackablesScreen> createState() => _TrackablesScreenState();
 }
 
-class _TrackablesScreenState extends State<TrackablesScreen> {
+class _TrackablesScreenState extends State<TrackablesScreen>
+    with AutomaticKeepAliveClientMixin {
   late final _storage = context.read<StorageBase>();
 
-  Future<void> _addNewTrackable() async {}
+  Future<void> _addNewTrackable() async {
+    // TODO(tytydraco): add trackables and display existing ones
+  }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Trackables'),
@@ -30,4 +34,7 @@ class _TrackablesScreenState extends State<TrackablesScreen> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
