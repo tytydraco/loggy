@@ -27,12 +27,11 @@ class LocalStorage extends StorageBase {
     final allEntries = allEntriesRaw.map((e) {
       final json = jsonDecode(e) as Map<String, dynamic>;
       return Entry.fromJson(json);
-    }).toList()
-      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    });
 
     entries
       ..clear()
-      ..addAll(allEntries.toSet());
+      ..addAll(allEntries);
 
     return super.getAllEntries();
   }
@@ -41,7 +40,6 @@ class LocalStorage extends StorageBase {
   Future<void> setAllEntries(Set<Entry> newEntries) async {
     await super.setAllEntries(newEntries);
 
-    newEntries.toList().sort((a, b) => a.timestamp.compareTo(b.timestamp));
     final jsonEntries = newEntries.map((e) {
       final json = e.toJson();
       return jsonEncode(json);
