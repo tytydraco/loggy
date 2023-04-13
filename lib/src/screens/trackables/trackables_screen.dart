@@ -53,6 +53,36 @@ class _TrackablesScreenState extends State<TrackablesScreen>
     }
 
     await _storage.addTrackable(newTrackable);
+
+    setState(() {});
+  }
+
+  Future<void> _deleteTrackable(String trackable) async {
+    final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Confirm delete'),
+            content: const Text(
+              'Are you sure you want to permanently delete this trackable?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Delete'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (confirmed) {
+      await _storage.deleteTrackable(trackable);
+      setState(() {});
+    }
   }
 
   @override
@@ -64,10 +94,8 @@ class _TrackablesScreenState extends State<TrackablesScreen>
       ),
       body: TrackablesList(
         trackables: _storage.trackables,
-        onTap: (trackable) async {
-          await _editTrackable(initialTrackable: trackable);
-          setState(() {});
-        },
+        onEdit: (trackable) => _editTrackable(initialTrackable: trackable),
+        onDelete: (trackable) => _deleteTrackable(trackable),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {

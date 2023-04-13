@@ -6,14 +6,18 @@ class TrackablesList extends StatelessWidget {
   const TrackablesList({
     super.key,
     required this.trackables,
-    this.onTap,
+    this.onEdit,
+    this.onDelete,
   });
 
   /// The set of trackables.
   final Set<String> trackables;
 
   /// The handler when a trackable is tapped.
-  final void Function(String trackable)? onTap;
+  final void Function(String trackable)? onEdit;
+
+  /// The handler when a trackable is long-pressed.
+  final void Function(String trackable)? onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +25,8 @@ class TrackablesList extends StatelessWidget {
       itemBuilder: (_, index) {
         final trackable = trackables.elementAt(index);
         return InkWell(
-          onTap: () => onTap?.call(trackable),
+          onTap: () => onEdit?.call(trackable),
+          onLongPress: () => onDelete?.call(trackable),
           child: SizedBox(
             height: 50,
             child: Align(
