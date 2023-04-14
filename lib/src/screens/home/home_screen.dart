@@ -109,6 +109,7 @@ class _HomeScreenState extends State<HomeScreen>
         },
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'home_new',
         onPressed: () async => _addNewEntry(),
         tooltip: 'New',
         child: const Icon(Icons.add),

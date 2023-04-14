@@ -24,23 +24,10 @@ class TrackablesList extends StatelessWidget {
     return ListView.separated(
       itemBuilder: (_, index) {
         final trackable = trackables.elementAt(index);
-        return InkWell(
+        return ListTile(
+          title: Text(trackable),
           onTap: () => onEdit?.call(trackable),
           onLongPress: () => onDelete?.call(trackable),
-          child: SizedBox(
-            height: 50,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Text(
-                  trackable,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 18),
-                ),
-              ),
-            ),
-          ),
         );
       },
       separatorBuilder: (_, __) => const Divider(),

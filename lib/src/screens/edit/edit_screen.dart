@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:loggy/src/data/constants.dart';
+import 'package:loggy/src/data/storage_base.dart';
 import 'package:loggy/src/models/entry.dart';
 import 'package:loggy/src/widgets/rating_toggle_group.dart';
+import 'package:provider/provider.dart';
 
 /// Edit an entry or add a new one.
 class EditScreen extends StatefulWidget {
@@ -17,6 +19,8 @@ class EditScreen extends StatefulWidget {
 }
 
 class _EditScreenState extends State<EditScreen> {
+  late final _storage = context.read<StorageBase>();
+
   late int? _ratingIndex =
       widget.initialEntry != null ? widget.initialEntry!.rating.value : null;
   late DateTime _date = widget.initialEntry != null
@@ -24,6 +28,10 @@ class _EditScreenState extends State<EditScreen> {
       : DateTime.now();
 
   final _dateStringFormatter = DateFormat.yMMMMd().add_jm();
+
+  late final _trackablesChecked = widget.initialEntry?.trackables != null
+      ? {for (var t in widget.initialEntry!.trackables!) t: true}
+      : <String, bool>{};
 
   Future<DateTime?> _selectTimestamp(DateTime initial) async {
     final newDate = await showDatePicker(
@@ -91,11 +99,21 @@ class _EditScreenState extends State<EditScreen> {
     return false;
   }
 
+  List<String>? _getCheckedTrackables() {
+    if (_trackablesChecked.isEmpty) return null;
+
+    return _trackablesChecked.entries
+        .where((element) => element.value)
+        .map((e) => e.key)
+        .toList();
+  }
+
   Entry? _getEditedEntry() {
     if (_ratingIndex != null) {
       return Entry(
         timestamp: _date,
         rating: defaultRatingScale[_ratingIndex!],
+        trackables: _getCheckedTrackables(),
       );
     }
 
@@ -144,10 +162,34 @@ class _EditScreenState extends State<EditScreen> {
                   ),
                 ),
               ),
+
+              // Trackable selection.
+              Expanded(
+                child: ListView.separated(
+                  itemBuilder: (_, index) {
+                    final trackable = _storage.trackables.elementAt(index);
+                    return CheckboxListTile(
+                      title: Text(trackable),
+                      value: _trackablesChecked.putIfAbsent(
+                        trackable,
+                        () => false,
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          _trackablesChecked[trackable] = value!;
+                        });
+                      },
+                    );
+                  },
+                  separatorBuilder: (_, __) => const Divider(),
+                  itemCount: _storage.trackables.length,
+                ),
+              )
             ],
           ),
         ),
         floatingActionButton: FloatingActionButton(
+          heroTag: 'edit_save',
           onPressed: () {
             final editedEntry = _getEditedEntry();
             if (editedEntry == null) Navigator.pop(context);

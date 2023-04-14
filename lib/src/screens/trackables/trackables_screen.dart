@@ -98,6 +98,7 @@ class _TrackablesScreenState extends State<TrackablesScreen>
         onDelete: (trackable) => _deleteTrackable(trackable),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'trackables_new',
         onPressed: () async {
           await _editTrackable();
           setState(() {});

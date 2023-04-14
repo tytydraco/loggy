@@ -1,5 +1,5 @@
+import 'package:flutter/foundation.dart';
 import 'package:loggy/src/models/rating.dart';
-import 'package:meta/meta.dart';
 
 /// Tracking entry.
 @immutable
@@ -16,7 +16,7 @@ class Entry {
     return Entry(
       timestamp: DateTime.fromMillisecondsSinceEpoch(json['timestamp'] as int),
       rating: Rating.fromJson(json['rating'] as Map<String, dynamic>),
-      trackables: json['trackables'] as List<String>?,
+      trackables: (json['trackables'] as List<dynamic>?)?.cast<String>(),
     );
   }
 
@@ -44,7 +44,7 @@ class Entry {
       other.runtimeType == runtimeType &&
       other.timestamp == timestamp &&
       other.rating == rating &&
-      other.trackables == trackables;
+      listEquals(other.trackables, trackables);
 
   @override
   int get hashCode => Object.hash(timestamp, rating, trackables);
