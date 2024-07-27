@@ -8,7 +8,7 @@ class Entry {
   const Entry({
     required this.timestamp,
     required this.rating,
-    required this.trackable,
+    this.trackables,
   });
 
   /// Creates a new [Entry] from a JSON map.
@@ -16,7 +16,7 @@ class Entry {
     return Entry(
       timestamp: DateTime.fromMillisecondsSinceEpoch(json['timestamp'] as int),
       rating: Rating.fromJson(json['rating'] as Map<String, dynamic>),
-      trackable: json['trackable'] as String,
+      trackables: (json['trackables'] as List<dynamic>?)?.cast<String>(),
     );
   }
 
@@ -27,14 +27,14 @@ class Entry {
   final Rating rating;
 
   /// The list of trackables.
-  final String trackable;
+  final List<String>? trackables;
 
   /// Converts the entry to a JSON object.
   Map<String, dynamic> toJson() {
     return {
       'timestamp': timestamp.millisecondsSinceEpoch,
       'rating': rating,
-      'trackable': trackable,
+      'trackables': trackables,
     };
   }
 
@@ -44,8 +44,8 @@ class Entry {
       other.runtimeType == runtimeType &&
       other.timestamp == timestamp &&
       other.rating == rating &&
-      other.trackable == trackable;
+      listEquals(other.trackables, trackables);
 
   @override
-  int get hashCode => Object.hash(timestamp, rating, trackable);
+  int get hashCode => Object.hash(timestamp, rating, trackables);
 }

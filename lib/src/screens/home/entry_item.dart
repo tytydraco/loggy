@@ -31,7 +31,7 @@ class EntryItem extends StatelessWidget {
       onTap: onEdit,
       onLongPress: onDelete,
       child: ListTile(
-        title: Text(entry.trackable),
+        title: Text(entry.trackables?.join(', ') ?? ''),
         trailing: RatingItem(entry.rating),
         leading: Text(dateString),
       ),

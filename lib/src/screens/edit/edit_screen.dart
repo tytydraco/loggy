@@ -28,7 +28,9 @@ class _EditScreenState extends State<EditScreen> {
 
   final _dateStringFormatter = DateFormat.yMMMMd().add_jm();
 
-  late var _trackableChecked = widget.initialEntry?.trackable;
+  late final _trackablesChecked = widget.initialEntry?.trackables != null
+      ? {for (var t in widget.initialEntry!.trackables!) t: true}
+      : <String, bool>{};
 
   Future<DateTime?> _selectTimestamp(DateTime initial) async {
     final newDate = await showDatePicker(
@@ -68,7 +70,7 @@ class _EditScreenState extends State<EditScreen> {
     final editedEntry = _getEditedEntry();
 
     // Exit if no changes were made.
-    if (widget.initialEntry != null && widget.initialEntry == editedEntry) {
+    if (widget.initialEntry != null && editedEntry == widget.initialEntry) {
       Navigator.pop(context);
       return;
     }
@@ -99,12 +101,21 @@ class _EditScreenState extends State<EditScreen> {
     }
   }
 
+  List<String>? _getCheckedTrackables() {
+    if (_trackablesChecked.isEmpty) return null;
+
+    return _trackablesChecked.entries
+        .where((element) => element.value)
+        .map((e) => e.key)
+        .toList();
+  }
+
   Entry? _getEditedEntry() {
-    if (_ratingIndex != null && _trackableChecked != null) {
+    if (_ratingIndex != null) {
       return Entry(
         timestamp: _date,
         rating: defaultRatingScale[_ratingIndex!],
-        trackable: _trackableChecked!,
+        trackables: _getCheckedTrackables(),
       );
     }
 
@@ -160,17 +171,17 @@ class _EditScreenState extends State<EditScreen> {
                 child: ListView.separated(
                   itemBuilder: (_, index) {
                     final trackable = _storage.trackables.elementAt(index);
-                    return ListTile(
+                    return CheckboxListTile(
                       title: Text(trackable),
-                      leading: Radio<String>(
-                        value: trackable,
-                        groupValue: _trackableChecked,
-                        onChanged: (value) {
-                          setState(() {
-                            _trackableChecked = value;
-                          });
-                        },
+                      value: _trackablesChecked.putIfAbsent(
+                        trackable,
+                        () => false,
                       ),
+                      onChanged: (value) {
+                        setState(() {
+                          _trackablesChecked[trackable] = value!;
+                        });
+                      },
                     );
                   },
                   separatorBuilder: (_, __) => const Divider(),
