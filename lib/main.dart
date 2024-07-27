@@ -8,10 +8,6 @@ import 'package:provider/provider.dart';
 final _storageProvider = LocalStorage();
 
 Future<void> main() async {
-  // await Firebase.initializeApp(
-  //   options: DefaultFirebaseOptions.currentPlatform,
-  // );
-
   await _storageProvider.init();
   WidgetsFlutterBinding.ensureInitialized();
 
