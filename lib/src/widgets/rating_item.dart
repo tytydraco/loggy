@@ -14,22 +14,12 @@ class RatingItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 50,
-      height: 50,
-      decoration: BoxDecoration(
+    return Text(
+      rating.value.toString(),
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 18,
         color: rating.color,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Center(
-        child: Text(
-          rating.value.toString(),
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-            color: Colors.white,
-          ),
-        ),
       ),
     );
   }

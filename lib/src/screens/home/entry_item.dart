@@ -24,28 +24,16 @@ class EntryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateString = DateFormat('MMMM d, y\nh:m a').format(entry.timestamp);
+    final dateString = DateFormat.yMd().add_jm().format(entry.timestamp);
 
-    return Card(
-      margin: const EdgeInsets.all(8),
-      child: InkWell(
-        splashColor: entry.rating.color,
-        onTap: onEdit,
-        onLongPress: onDelete,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              // Date.
-              Expanded(
-                child: Text(dateString),
-              ),
-
-              // Rating.
-              RatingItem(entry.rating),
-            ],
-          ),
-        ),
+    return InkWell(
+      splashColor: entry.rating.color,
+      onTap: onEdit,
+      onLongPress: onDelete,
+      child: ListTile(
+        title: Text(entry.trackable),
+        trailing: RatingItem(entry.rating),
+        leading: Text(dateString),
       ),
     );
   }
