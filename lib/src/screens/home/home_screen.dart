@@ -83,22 +83,7 @@ class _HomeScreenState extends State<HomeScreen>
       body: ListView.separated(
         itemCount: _storage.entries.length,
         padding: const EdgeInsets.all(16),
-        separatorBuilder: (_, index) {
-          final entry = _storage.entries.elementAt(index);
-
-          // Look at next entry to see if the day will change.
-          if (index < _storage.entries.length - 1) {
-            final nextEntry = _storage.entries.elementAt(index + 1);
-
-            if (nextEntry.timestamp.year != entry.timestamp.year ||
-                nextEntry.timestamp.month != entry.timestamp.month ||
-                nextEntry.timestamp.day != entry.timestamp.day) {
-              return const Divider();
-            }
-          }
-
-          return Container();
-        },
+        separatorBuilder: (_, __) => const Divider(),
         itemBuilder: (_, index) {
           final entry = _storage.entries.elementAt(index);
           return EntryItem(
