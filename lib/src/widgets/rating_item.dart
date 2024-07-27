@@ -15,7 +15,7 @@ class RatingItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      rating.value.toString(),
+      rating.name,
       style: TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: 18,
