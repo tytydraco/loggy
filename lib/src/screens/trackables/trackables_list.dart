@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 class TrackablesList extends StatelessWidget {
   /// Creates a new [TrackablesList].
   const TrackablesList({
-    super.key,
     required this.trackables,
     this.onEdit,
     this.onDelete,
+    super.key,
   });
 
   /// The set of trackables.
@@ -27,7 +27,10 @@ class TrackablesList extends StatelessWidget {
         return ListTile(
           title: Text(trackable),
           onTap: () => onEdit?.call(trackable),
-          onLongPress: () => onDelete?.call(trackable),
+          leading: IconButton(
+            onPressed: () => onDelete?.call(trackable),
+            icon: const Icon(Icons.delete),
+          ),
         );
       },
       separatorBuilder: (_, __) => const Divider(),
