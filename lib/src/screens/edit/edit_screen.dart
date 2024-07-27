@@ -21,8 +21,7 @@ class EditScreen extends StatefulWidget {
 class _EditScreenState extends State<EditScreen> {
   late final _storage = context.read<StorageBase>();
 
-  late int? _ratingIndex =
-      widget.initialEntry != null ? widget.initialEntry!.rating.value : null;
+  late int? _ratingIndex = widget.initialEntry?.rating.value;
   late DateTime _date = widget.initialEntry != null
       ? widget.initialEntry!.timestamp
       : DateTime.now();
@@ -43,7 +42,7 @@ class _EditScreenState extends State<EditScreen> {
 
     if (newDate == null) return null;
 
-    if (!context.mounted) return null;
+    if (!context.mounted || !mounted) return null;
 
     final newTime = await showTimePicker(
       context: context,
@@ -65,12 +64,15 @@ class _EditScreenState extends State<EditScreen> {
     return selectedDate;
   }
 
-  Future<bool> _confirmExit() async {
+  Future<void> _confirmExit(bool didPop) async {
+    if (didPop) return;
+
     final editedEntry = _getEditedEntry();
 
     // Exit if no changes were made.
     if (widget.initialEntry != null && editedEntry == widget.initialEntry) {
-      return true;
+      Navigator.pop(context);
+      return;
     }
 
     final confirmed = await showDialog<bool>(
@@ -94,9 +96,9 @@ class _EditScreenState extends State<EditScreen> {
         ) ??
         false;
 
-    if (confirmed && context.mounted) return true;
-
-    return false;
+    if (confirmed && mounted) {
+      Navigator.pop(context);
+    }
   }
 
   List<String>? _getCheckedTrackables() {
@@ -122,8 +124,9 @@ class _EditScreenState extends State<EditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _confirmExit,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: _confirmExit,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Edit'),
@@ -184,7 +187,7 @@ class _EditScreenState extends State<EditScreen> {
                   separatorBuilder: (_, __) => const Divider(),
                   itemCount: _storage.trackables.length,
                 ),
-              )
+              ),
             ],
           ),
         ),

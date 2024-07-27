@@ -2,30 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:loggy/src/models/rating.dart';
 
 /// The set of ratings to offer.
-const defaultRatingScale = [
+final defaultRatingScale = [
   Rating(
     value: 0,
     name: 'Very bad',
-    color: Colors.red,
+    color: Colors.red.shade500,
   ),
   Rating(
     value: 1,
     name: 'Bad',
-    color: Colors.orange,
+    color: Colors.orange.shade500,
   ),
   Rating(
     value: 2,
     name: 'Okay',
-    color: Colors.yellow,
+    color: Colors.yellow.shade500,
   ),
   Rating(
     value: 3,
     name: 'Good',
-    color: Colors.lightGreen,
+    color: Colors.lightGreen.shade500,
   ),
   Rating(
     value: 4,
     name: 'Very good',
-    color: Colors.green,
+    color: Colors.green.shade500,
   ),
 ];
