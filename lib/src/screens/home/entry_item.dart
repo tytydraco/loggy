@@ -27,7 +27,6 @@ class EntryItem extends StatelessWidget {
     final dateString = DateFormat.yMd().add_jm().format(entry.timestamp);
 
     return InkWell(
-      splashColor: entry.rating.color,
       onTap: onEdit,
       onLongPress: onDelete,
       child: ListTile(
