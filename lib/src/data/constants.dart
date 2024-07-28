@@ -5,27 +5,27 @@ import 'package:loggy/src/models/rating.dart';
 final defaultRatingScale = [
   Rating(
     value: 0,
-    name: 'Very bad',
+    name: '-2',
     color: Colors.red.shade500,
   ),
   Rating(
     value: 1,
-    name: 'Bad',
+    name: '-1',
     color: Colors.orange.shade500,
   ),
   Rating(
     value: 2,
-    name: 'Okay',
+    name: '+0',
     color: Colors.yellow.shade500,
   ),
   Rating(
     value: 3,
-    name: 'Good',
+    name: '+1',
     color: Colors.lightGreen.shade500,
   ),
   Rating(
     value: 4,
-    name: 'Very good',
+    name: '+2',
     color: Colors.green.shade500,
   ),
 ];
