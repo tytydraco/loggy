@@ -8,10 +8,7 @@ import 'package:provider/provider.dart';
 
 final _storageProvider = LocalStorage();
 
-Future<void> main() async {
-  await _storageProvider.init();
-  WidgetsFlutterBinding.ensureInitialized();
-
+void main() {
   runApp(const Loggy());
 }
 
@@ -30,51 +27,65 @@ class _LoggyState extends State<Loggy> {
 
   final _analysisKey = GlobalKey();
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _build() {
     final pages = [
       const HomeScreen(),
       const TrackablesScreen(),
       AnalysisScreen(key: _analysisKey),
     ];
 
-    return Provider<StorageBase>.value(
-      value: _storageProvider,
-      child: MaterialApp(
-        title: 'Loggy',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
+    return MaterialApp(
+      title: 'Loggy',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: Scaffold(
+        body: PageView(
+          controller: _pageController,
+          children: pages,
         ),
-        home: Scaffold(
-          body: PageView(
-            controller: _pageController,
-            children: pages,
-          ),
-          bottomNavigationBar: BottomNavigationBar(
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.mood),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.edit),
-                label: 'Trackables',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.analytics),
-                label: 'Analysis',
-              ),
-            ],
-            currentIndex: _currentIndex,
-            onTap: (index) {
-              setState(() {
-                _currentIndex = index;
-                _pageController.jumpToPage(_currentIndex);
-              });
-            },
-          ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.mood),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.edit),
+              label: 'Trackables',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.analytics),
+              label: 'Analysis',
+            ),
+          ],
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+              _pageController.jumpToPage(_currentIndex);
+            });
+          },
         ),
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Wait for storage provider to load first.
+    return FutureBuilder(
+      future: _storageProvider.init(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return Provider<StorageBase>.value(
+            value: _storageProvider,
+            child: _build(),
+          );
+        } else {
+          return Container();
+        }
+      },
     );
   }
 }
