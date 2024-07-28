@@ -29,11 +29,14 @@ class _AnalysisScreenState extends State<AnalysisScreen>
       body: ListView.separated(
         itemBuilder: (context, index) {
           final data = coefficients.entries.elementAt(index);
-          final percentage = (data.value * 100).truncate();
-          final prettyPercentage = '$percentage%';
+          final percentage = (data.value * 100).round();
+          var prettyPercentage = '$percentage%';
 
           Color? textColor;
-          if (percentage > 0) textColor = Colors.green;
+          if (percentage > 0) {
+            textColor = Colors.green;
+            prettyPercentage = '+$prettyPercentage';
+          }
           if (percentage < 0) textColor = Colors.red;
 
           return ListTile(
