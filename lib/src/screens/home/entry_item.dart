@@ -32,7 +32,7 @@ class EntryItem extends StatelessWidget {
       child: ListTile(
         title: Text(entry.trackables?.join(', ') ?? ''),
         trailing: RatingItem(entry.rating),
-        leading: Text(dateString),
+        subtitle: Text(dateString),
       ),
     );
   }
