@@ -70,12 +70,6 @@ class _LoggyState extends State<Loggy> {
               setState(() {
                 _currentIndex = index;
                 _pageController.jumpToPage(_currentIndex);
-
-                // Reload the analysis screen when we switch to that tab.
-                if (index ==
-                    pages.indexWhere((e) => e.runtimeType == AnalysisScreen)) {
-                  _analysisKey.currentState?.setState(() {});
-                }
               });
             },
           ),

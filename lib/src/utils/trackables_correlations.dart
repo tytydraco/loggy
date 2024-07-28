@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:collection/collection.dart';
-import 'package:loggy/src/data/constants.dart';
 import 'package:loggy/src/models/entry.dart';
 
 /// Calculate correlations of data.
@@ -24,16 +23,21 @@ class TrackablesCorrelations {
     final x = entries
         .map((e) => (e.trackables?.contains(trackable) ?? false) ? 1 : 0)
         .toList();
+    final y = entries.map((e) => e.rating.value).toList();
+
+    // No data yet.
+    if (x.isEmpty || y.isEmpty) return 0;
+
     final xMean = x.average;
     final xStdDev = _stdDev(x);
     final stdXs = x.map((e) => (e - xMean) / xStdDev).toList();
 
-    final y = entries
-        .map((e) => e.rating.value / defaultRatingScale.last.value)
-        .toList();
     final yMean = y.average;
     final yStdDev = _stdDev(x);
     final stdYs = y.map((e) => (e - yMean) / yStdDev).toList();
+
+    // No correlation yet.
+    if (xStdDev == 0 || yStdDev == 0) return 0;
 
     final stdZs = Map.fromIterables(stdXs, stdYs)
         .entries
