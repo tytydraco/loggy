@@ -12,9 +12,8 @@ class TrackablesCorrelations {
   final Iterable<Entry> entries;
 
   double _stdDev(List<int> nums) {
-    final mean = nums.average;
-    final squaredDiffs = nums.map((e) => pow(e - mean, 2)).toList();
-    final variance = squaredDiffs.sum / nums.length;
+    final squaredDiffs = nums.map((e) => pow(e - nums.average, 2)).toList();
+    final variance = squaredDiffs.sum / (nums.length - 1);
     return sqrt(variance);
   }
 
@@ -28,23 +27,20 @@ class TrackablesCorrelations {
     // No data yet.
     if (x.isEmpty || y.isEmpty) return 0;
 
-    final xMean = x.average;
     final xStdDev = _stdDev(x);
-    final stdXs = x.map((e) => (e - xMean) / xStdDev).toList();
-
-    final yMean = y.average;
-    final yStdDev = _stdDev(x);
-    final stdYs = y.map((e) => (e - yMean) / yStdDev).toList();
+    final yStdDev = _stdDev(y);
 
     // No correlation yet.
     if (xStdDev == 0 || yStdDev == 0) return 0;
 
-    final stdZs = Map.fromIterables(stdXs, stdYs)
-        .entries
-        .map((e) => e.value * e.key)
-        .toList();
+    final xDeltas = x.map((e) => e - x.average).toList();
+    final yDeltas = y.map((e) => e - y.average).toList();
 
-    return stdZs.sum / (stdZs.length - 1);
+    final products = List.generate(entries.length, (index) {
+      return xDeltas[index] * yDeltas[index];
+    });
+
+    return products.sum / (products.length - 1) / (xStdDev * yStdDev);
   }
 
   /// Calculate the correlation coefficient for all trackables.
