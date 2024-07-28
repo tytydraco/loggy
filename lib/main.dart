@@ -9,8 +9,8 @@ import 'package:provider/provider.dart';
 final _storageProvider = LocalStorage();
 
 Future<void> main() async {
-  await _storageProvider.init();
   WidgetsFlutterBinding.ensureInitialized();
+  await _storageProvider.init();
 
   runApp(const Loggy());
 }
