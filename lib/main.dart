@@ -49,6 +49,11 @@ class _LoggyState extends State<Loggy> {
           body: PageView(
             controller: _pageController,
             children: pages,
+            onPageChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
           ),
           bottomNavigationBar: BottomNavigationBar(
             items: const [
@@ -68,8 +73,7 @@ class _LoggyState extends State<Loggy> {
             currentIndex: _currentIndex,
             onTap: (index) {
               setState(() {
-                _currentIndex = index;
-                _pageController.jumpToPage(_currentIndex);
+                _pageController.jumpToPage(index);
               });
             },
           ),
