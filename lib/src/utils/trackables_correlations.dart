@@ -12,6 +12,8 @@ class TrackablesCorrelations {
   final Iterable<Entry> entries;
 
   double _stdDev(List<int> nums) {
+    if (nums.length <= 1) return 0;
+
     final squaredDiffs = nums.map((e) => pow(e - nums.average, 2)).toList();
     final variance = squaredDiffs.sum / (nums.length - 1);
     return sqrt(variance);

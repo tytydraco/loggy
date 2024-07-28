@@ -70,7 +70,7 @@ class _EditScreenState extends State<EditScreen> {
     final editedEntry = _getEditedEntry();
 
     // Exit if no changes were made.
-    if (widget.initialEntry != null && editedEntry == widget.initialEntry) {
+    if (widget.initialEntry != null && widget.initialEntry == editedEntry) {
       Navigator.pop(context);
       return;
     }
