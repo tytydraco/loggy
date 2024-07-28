@@ -95,7 +95,7 @@ class _TrackablesScreenState extends State<TrackablesScreen>
       body: TrackablesList(
         trackables: _storage.trackables,
         onEdit: (trackable) => _editTrackable(initialTrackable: trackable),
-        onDelete: (trackable) => _deleteTrackable(trackable),
+        onDelete: _deleteTrackable,
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'trackables_new',
@@ -104,7 +104,7 @@ class _TrackablesScreenState extends State<TrackablesScreen>
           setState(() {});
         },
         tooltip: 'New',
-        child: const Icon(Icons.edit),
+        child: const Icon(Icons.add),
       ),
     );
   }
