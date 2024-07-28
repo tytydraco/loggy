@@ -18,15 +18,37 @@ class _AnalysisScreenState extends State<AnalysisScreen>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
+    final coefficients = _calculateCorrelations();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Analysis'),
       ),
-      body: Center(
-        child: OutlinedButton(
-          onPressed: _calculateCorrelations,
-          child: const Text('Test'),
-        ),
+      body: ListView.separated(
+        itemBuilder: (context, index) {
+          final data = coefficients.entries.elementAt(index);
+          final percentage = (data.value * 100).truncate();
+          final prettyPercentage = '$percentage%';
+
+          Color? textColor;
+          if (percentage > 0) textColor = Colors.green;
+          if (percentage < 0) textColor = Colors.red;
+
+          return ListTile(
+            title: Text(data.key),
+            trailing: Text(
+              prettyPercentage,
+              style: TextStyle(
+                fontSize: 14,
+                color: textColor,
+              ),
+            ),
+          );
+        },
+        separatorBuilder: (_, __) => const Divider(),
+        itemCount: coefficients.length,
       ),
     );
   }

@@ -28,14 +28,16 @@ class _LoggyState extends State<Loggy> {
   final _pageController = PageController();
   var _currentIndex = 0;
 
-  final _pages = [
-    HomeScreen(),
-    TrackablesScreen(),
-    AnalysisScreen(),
-  ];
+  final _analysisKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
+    final pages = [
+      const HomeScreen(),
+      const TrackablesScreen(),
+      AnalysisScreen(key: _analysisKey),
+    ];
+
     return Provider<StorageBase>.value(
       value: _storageProvider,
       child: MaterialApp(
@@ -46,7 +48,7 @@ class _LoggyState extends State<Loggy> {
         home: Scaffold(
           body: PageView(
             controller: _pageController,
-            children: _pages,
+            children: pages,
           ),
           bottomNavigationBar: BottomNavigationBar(
             items: const [
@@ -68,6 +70,12 @@ class _LoggyState extends State<Loggy> {
               setState(() {
                 _currentIndex = index;
                 _pageController.jumpToPage(_currentIndex);
+
+                // Reload the analysis screen when we switch to that tab.
+                if (index ==
+                    pages.indexWhere((e) => e.runtimeType == AnalysisScreen)) {
+                  _analysisKey.currentState?.setState(() {});
+                }
               });
             },
           ),
