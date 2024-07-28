@@ -26,6 +26,10 @@ class _HomeScreenState extends State<HomeScreen>
 
     if (entry != null) {
       await _storage.addEntry(entry);
+
+      // Sometimes the stored data differs from the internal state; synchronize.
+      await _storage.getAllEntries();
+
       setState(() {});
     }
   }
