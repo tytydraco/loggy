@@ -86,7 +86,6 @@ class _HomeScreenState extends State<HomeScreen>
       ),
       body: ListView.separated(
         itemCount: _storage.entries.length,
-        padding: const EdgeInsets.all(16),
         separatorBuilder: (_, __) => const Divider(),
         itemBuilder: (_, index) {
           final entry = _storage.entries.elementAt(index);

@@ -28,9 +28,12 @@ class EntryItem extends StatelessWidget {
 
     return InkWell(
       onTap: onEdit,
-      onLongPress: onDelete,
       child: ListTile(
         title: Text(entry.trackables?.join(', ') ?? ''),
+        leading: IconButton(
+          onPressed: () => onDelete?.call(),
+          icon: const Icon(Icons.delete),
+        ),
         trailing: RatingItem(entry.rating),
         subtitle: Text(dateString),
       ),
