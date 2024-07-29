@@ -87,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Copied to clipboard.')),
+        const SnackBar(content: Text('Copied entries to clipboard.')),
       );
     }
   }
@@ -108,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen>
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Imported from clipboard.')),
+            const SnackBar(content: Text('Imported entries from clipboard.')),
           );
         }
       } catch (_) {
