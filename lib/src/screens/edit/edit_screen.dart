@@ -195,8 +195,13 @@ class _EditScreenState extends State<EditScreen> {
           heroTag: 'edit_save',
           onPressed: () {
             final editedEntry = _getEditedEntry();
-            if (editedEntry == null) Navigator.pop(context);
-            Navigator.pop(context, editedEntry);
+            if (editedEntry == null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Entry is incomplete.')),
+              );
+            } else {
+              Navigator.pop(context, editedEntry);
+            }
           },
           tooltip: 'Save',
           child: const Icon(Icons.save),
