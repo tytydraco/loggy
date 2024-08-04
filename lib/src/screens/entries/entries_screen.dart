@@ -24,7 +24,12 @@ class _EntriesScreenState extends State<EntriesScreen>
   Future<void> _addNewEntry() async {
     final entry = await Navigator.push(
       context,
-      MaterialPageRoute<Entry>(builder: (context) => const EditScreen()),
+      MaterialPageRoute<Entry>(
+        builder: (context) => Provider.value(
+          value: _storage,
+          child: const EditScreen(),
+        ),
+      ),
     );
 
     if (entry != null) {

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:loggy/src/data/local_storage.dart';
-import 'package:loggy/src/screens/home/home_screen.dart';
+import 'package:loggy/src/data/list_storage.dart';
+import 'package:loggy/src/screens/lists/lists_screen.dart';
+import 'package:provider/provider.dart';
 
-final _localStorage = LocalStorage(suffix: 'all');
+final _listStorage = ListStorage();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await _localStorage.init();
+  await _listStorage.init();
 
   runApp(const Loggy());
 }
@@ -23,6 +24,15 @@ class Loggy extends StatefulWidget {
 class _LoggyState extends State<Loggy> {
   @override
   Widget build(BuildContext context) {
-    return HomeScreen(localStorage: _localStorage);
+    return MaterialApp(
+      title: 'Loggy',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: Provider.value(
+        value: _listStorage,
+        child: const ListsScreen(),
+      ),
+    );
   }
 }
