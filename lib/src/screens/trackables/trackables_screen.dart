@@ -17,7 +17,7 @@ class TrackablesScreen extends StatefulWidget {
 
 class _TrackablesScreenState extends State<TrackablesScreen>
     with AutomaticKeepAliveClientMixin {
-  late final _storage = context.read<LocalStorage>();
+  late final _localStorage = context.read<LocalStorage>();
 
   Future<void> _editTrackable({String? initialTrackable}) async {
     final newTrackable = await showDialog<String?>(
@@ -52,10 +52,10 @@ class _TrackablesScreenState extends State<TrackablesScreen>
     if (newTrackable == null || newTrackable == initialTrackable) return;
 
     if (initialTrackable != null) {
-      await _storage.deleteTrackable(initialTrackable);
+      await _localStorage.deleteTrackable(initialTrackable);
     }
 
-    await _storage.addTrackable(newTrackable);
+    await _localStorage.addTrackable(newTrackable);
 
     setState(() {});
   }
@@ -83,13 +83,13 @@ class _TrackablesScreenState extends State<TrackablesScreen>
         false;
 
     if (confirmed) {
-      await _storage.deleteTrackable(trackable);
+      await _localStorage.deleteTrackable(trackable);
       setState(() {});
     }
   }
 
   Future<void> _exportTrackables() async {
-    final json = jsonEncode(_storage.trackables.toList());
+    final json = jsonEncode(_localStorage.trackables.toList());
     final base64 = base64Encode(utf8.encode(json));
     await Clipboard.setData(ClipboardData(text: base64));
 
@@ -110,7 +110,7 @@ class _TrackablesScreenState extends State<TrackablesScreen>
         final json = utf8.decode(base64Decode(base64));
         final trackables = (jsonDecode(json) as List<dynamic>).cast<String>();
 
-        await _storage.setAllTrackables(Set.from(trackables));
+        await _localStorage.setAllTrackables(Set.from(trackables));
         setState(() {});
 
         if (mounted) {
@@ -148,7 +148,7 @@ class _TrackablesScreenState extends State<TrackablesScreen>
         ],
       ),
       body: TrackablesList(
-        trackables: _storage.trackables,
+        trackables: _localStorage.trackables,
         onEdit: (trackable) => _editTrackable(initialTrackable: trackable),
         onDelete: _deleteTrackable,
       ),

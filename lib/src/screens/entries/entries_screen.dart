@@ -19,24 +19,24 @@ class EntriesScreen extends StatefulWidget {
 
 class _EntriesScreenState extends State<EntriesScreen>
     with AutomaticKeepAliveClientMixin {
-  late final _storage = context.read<LocalStorage>();
+  late final _localStorage = context.read<LocalStorage>();
 
   Future<void> _addNewEntry() async {
     final entry = await Navigator.push(
       context,
       MaterialPageRoute<Entry>(
         builder: (context) => Provider.value(
-          value: _storage,
+          value: _localStorage,
           child: const EditScreen(),
         ),
       ),
     );
 
     if (entry != null) {
-      await _storage.addEntry(entry);
+      await _localStorage.addEntry(entry);
 
       // Sometimes the stored data differs from the internal state; synchronize.
-      await _storage.getAllEntries();
+      await _localStorage.getAllEntries();
 
       setState(() {});
     }
@@ -51,8 +51,8 @@ class _EntriesScreenState extends State<EntriesScreen>
     );
 
     if (newEntry != null) {
-      await _storage.deleteEntry(entry);
-      await _storage.addEntry(newEntry);
+      await _localStorage.deleteEntry(entry);
+      await _localStorage.addEntry(newEntry);
       setState(() {});
     }
   }
@@ -80,13 +80,13 @@ class _EntriesScreenState extends State<EntriesScreen>
         false;
 
     if (confirmed) {
-      await _storage.deleteEntry(entry);
+      await _localStorage.deleteEntry(entry);
       setState(() {});
     }
   }
 
   Future<void> _exportEntries() async {
-    final json = jsonEncode(_storage.entries.toList());
+    final json = jsonEncode(_localStorage.entries.toList());
     final base64 = base64Encode(utf8.encode(json));
     await Clipboard.setData(ClipboardData(text: base64));
 
@@ -108,7 +108,7 @@ class _EntriesScreenState extends State<EntriesScreen>
         final entries = (jsonDecode(json) as List<dynamic>)
             .map((e) => Entry.fromJson(e as Map<String, dynamic>));
 
-        await _storage.setAllEntries(Set.from(entries));
+        await _localStorage.setAllEntries(Set.from(entries));
         setState(() {});
 
         if (mounted) {
@@ -144,10 +144,10 @@ class _EntriesScreenState extends State<EntriesScreen>
         ],
       ),
       body: ListView.separated(
-        itemCount: _storage.entries.length,
+        itemCount: _localStorage.entries.length,
         separatorBuilder: (_, __) => const Divider(),
         itemBuilder: (_, index) {
-          final entry = _storage.entries.elementAt(index);
+          final entry = _localStorage.entries.elementAt(index);
           return EntryItem(
             entry,
             onEdit: () => _editEntry(entry),
