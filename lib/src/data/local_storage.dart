@@ -14,11 +14,17 @@ class LocalStorage {
   /// The preference key suffix to separate lists.
   final String suffix;
 
+  /// The preference key prefix for the entries.
+  static const entriesPrefKeyPrefix = 'entries_';
+
+  /// The preference key prefix for the trackables.
+  static const trackablesPrefKeyPrefix = 'trackables_';
+
   /// The shared preferences key for the entries.
-  late final entriesPrefKey = 'entries_$suffix';
+  late final entriesPrefKey = '$entriesPrefKeyPrefix$suffix';
 
   /// The shared preferences key for the trackables.
-  late final trackablesPrefKey = 'trackables_$suffix';
+  late final trackablesPrefKey = '$trackablesPrefKeyPrefix$suffix';
 
   /// Up-to-date set of entries sorted by timestamp.
   Set<Entry> entries =
