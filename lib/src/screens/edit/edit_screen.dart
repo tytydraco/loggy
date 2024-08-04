@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:loggy/src/data/constants.dart';
-import 'package:loggy/src/data/storage_base.dart';
+import 'package:loggy/src/data/local_storage.dart';
 import 'package:loggy/src/models/entry.dart';
 import 'package:loggy/src/widgets/rating_toggle_group.dart';
 import 'package:provider/provider.dart';
@@ -19,7 +19,7 @@ class EditScreen extends StatefulWidget {
 }
 
 class _EditScreenState extends State<EditScreen> {
-  late final _storage = context.read<StorageBase>();
+  late final _storage = context.read<LocalStorage>();
 
   late int? _ratingIndex = widget.initialEntry?.rating.value;
   late DateTime _date = widget.initialEntry != null

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:loggy/src/data/storage_base.dart';
+import 'package:loggy/src/data/local_storage.dart';
 import 'package:loggy/src/models/entry.dart';
 import 'package:loggy/src/screens/edit/edit_screen.dart';
 import 'package:loggy/src/screens/home/entry_item.dart';
@@ -19,7 +19,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with AutomaticKeepAliveClientMixin {
-  late final _storage = context.read<StorageBase>();
+  late final _storage = context.read<LocalStorage>();
 
   Future<void> _addNewEntry() async {
     final entry = await Navigator.push(

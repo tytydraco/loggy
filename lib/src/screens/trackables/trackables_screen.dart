@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:loggy/src/data/storage_base.dart';
+import 'package:loggy/src/data/local_storage.dart';
 import 'package:loggy/src/screens/trackables/trackables_list.dart';
 import 'package:provider/provider.dart';
 
@@ -17,7 +17,7 @@ class TrackablesScreen extends StatefulWidget {
 
 class _TrackablesScreenState extends State<TrackablesScreen>
     with AutomaticKeepAliveClientMixin {
-  late final _storage = context.read<StorageBase>();
+  late final _storage = context.read<LocalStorage>();
 
   Future<void> _editTrackable({String? initialTrackable}) async {
     final newTrackable = await showDialog<String?>(

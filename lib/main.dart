@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:loggy/src/data/local_storage.dart';
-import 'package:loggy/src/data/storage_base.dart';
 import 'package:loggy/src/screens/analysis/analysis_screen.dart';
 import 'package:loggy/src/screens/home/home_screen.dart';
 import 'package:loggy/src/screens/trackables/trackables_screen.dart';
@@ -38,7 +37,7 @@ class _LoggyState extends State<Loggy> {
       AnalysisScreen(key: _analysisKey),
     ];
 
-    return Provider<StorageBase>.value(
+    return Provider<LocalStorage>.value(
       value: _storageProvider,
       child: MaterialApp(
         title: 'Loggy',

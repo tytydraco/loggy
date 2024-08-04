@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:loggy/src/data/storage_base.dart';
+import 'package:loggy/src/data/local_storage.dart';
 import 'package:loggy/src/utils/trackables_correlations.dart';
 import 'package:provider/provider.dart';
 
@@ -14,7 +14,7 @@ class AnalysisScreen extends StatefulWidget {
 
 class _AnalysisScreenState extends State<AnalysisScreen>
     with AutomaticKeepAliveClientMixin {
-  late final _storage = context.read<StorageBase>();
+  late final _storage = context.read<LocalStorage>();
 
   @override
   Widget build(BuildContext context) {
