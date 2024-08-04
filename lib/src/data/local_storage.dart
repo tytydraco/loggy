@@ -6,11 +6,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// Local storage using shared preferences.
 class LocalStorage {
+  /// Creates a new [LocalStorage] given a [suffix].
+  LocalStorage({
+    required this.suffix,
+  });
+
+  /// The preference key suffix to separate lists.
+  final String suffix;
+
   /// The shared preferences key for the entries.
-  static const entriesPrefKey = 'entries';
+  late final entriesPrefKey = 'entries_$suffix';
 
   /// The shared preferences key for the trackables.
-  static const trackablesPrefKey = 'trackables';
+  late final trackablesPrefKey = 'trackables_$suffix';
 
   /// Up-to-date set of entries sorted by timestamp.
   Set<Entry> entries =
@@ -22,7 +30,7 @@ class LocalStorage {
   late SharedPreferences _sharedPrefs;
 
   /// Prepare the shared preferences.
-  Future<void> init() async {
+  Future<void> init({String? suffix}) async {
     _sharedPrefs = await SharedPreferences.getInstance();
     entries.addAll(await getAllEntries());
     trackables.addAll(await getAllTrackables());

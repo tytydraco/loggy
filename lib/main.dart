@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:loggy/src/data/local_storage.dart';
 import 'package:loggy/src/screens/home/home_screen.dart';
 
-final _localStorage = LocalStorage();
+final _localStorage = LocalStorage(suffix: 'all');
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
