@@ -24,6 +24,8 @@ class LocalStorage {
   /// Prepare the shared preferences.
   Future<void> init() async {
     _sharedPrefs = await SharedPreferences.getInstance();
+    entries.addAll(await getAllEntries());
+    trackables.addAll(await getAllTrackables());
   }
 
   /// Return a set of all stored entries.
