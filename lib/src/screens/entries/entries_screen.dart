@@ -5,19 +5,19 @@ import 'package:flutter/services.dart';
 import 'package:loggy/src/data/local_storage.dart';
 import 'package:loggy/src/models/entry.dart';
 import 'package:loggy/src/screens/edit/edit_screen.dart';
-import 'package:loggy/src/screens/home/entry_item.dart';
+import 'package:loggy/src/screens/entries/entry_item.dart';
 import 'package:provider/provider.dart';
 
-/// The home screen.
-class HomeScreen extends StatefulWidget {
-  /// Creates a new [HomeScreen].
-  const HomeScreen({super.key});
+/// The entries screen.
+class EntriesScreen extends StatefulWidget {
+  /// Creates a new [EntriesScreen].
+  const EntriesScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<EntriesScreen> createState() => _EntriesScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
+class _EntriesScreenState extends State<EntriesScreen>
     with AutomaticKeepAliveClientMixin {
   late final _storage = context.read<LocalStorage>();
 
@@ -126,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen>
     super.build(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
+        title: const Text('Entries'),
         actions: [
           IconButton(
             onPressed: _exportEntries,
@@ -151,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen>
         },
       ),
       floatingActionButton: FloatingActionButton(
-        heroTag: 'home_new',
+        heroTag: 'entries_new',
         onPressed: () async => _addNewEntry(),
         tooltip: 'New',
         child: const Icon(Icons.add),

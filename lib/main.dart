@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loggy/src/data/local_storage.dart';
 import 'package:loggy/src/screens/analysis/analysis_screen.dart';
-import 'package:loggy/src/screens/home/home_screen.dart';
+import 'package:loggy/src/screens/entries/entries_screen.dart';
 import 'package:loggy/src/screens/trackables/trackables_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -32,7 +32,7 @@ class _LoggyState extends State<Loggy> {
   @override
   Widget build(BuildContext context) {
     final pages = [
-      const HomeScreen(),
+      const EntriesScreen(),
       const TrackablesScreen(),
       AnalysisScreen(key: _analysisKey),
     ];
