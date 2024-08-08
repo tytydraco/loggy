@@ -116,7 +116,10 @@ class _ListsScreenState extends State<ListsScreen>
           return MultiProvider(
             providers: [
               ChangeNotifierProvider.value(value: listSaveNotifier),
-              Provider.value(value: list),
+              Provider.value(
+                value: list,
+                updateShouldNotify: (_, __) => false,
+              ),
             ],
             child: const HomeScreen(),
           );
