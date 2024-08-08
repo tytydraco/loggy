@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:loggy/src/data/list_storage.dart';
 import 'package:loggy/src/models/loggy_list.dart';
 import 'package:loggy/src/screens/home/home_screen.dart';
@@ -104,17 +107,70 @@ class _ListsScreenState extends State<ListsScreen>
     );
   }
 
+  /// Exports a list to clipboard.
+  Future<void> _exportList(LoggyList list) async {
+    final json = jsonEncode(list);
+    final base64 = base64Encode(utf8.encode(json));
+    await Clipboard.setData(ClipboardData(text: base64));
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Copied list to clipboard.')),
+      );
+    }
+  }
+
+  /// Exports a list from clipboard.
+  Future<void> _importList() async {
+    final clipboardData = await Clipboard.getData('text/plain');
+
+    try {
+      final base64 = clipboardData!.text!;
+
+      final json = utf8.decode(base64Decode(base64));
+      final listJson = jsonDecode(json) as Map<String, dynamic>;
+      final list = LoggyList.fromJson(listJson);
+
+      // Replace if exists already.
+      await _listStorage.updateList(list);
+      setState(() {});
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Imported trackables from clipboard.'),
+          ),
+        );
+      }
+    } catch (e) {
+      if (kDebugMode) print(e);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to parse clipboard.')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Lists'),
+        actions: [
+          IconButton(
+            onPressed: _importList,
+            icon: const Icon(Icons.paste),
+          ),
+        ],
       ),
       body: ListsList(
         lists: _listStorage.lists,
         onTap: _selectList,
         onDelete: _deleteList,
+        onExport: _exportList,
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'lists_new',

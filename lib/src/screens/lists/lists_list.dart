@@ -6,8 +6,9 @@ class ListsList extends StatelessWidget {
   /// Creates a new [ListsList].
   const ListsList({
     required this.lists,
-    this.onTap,
-    this.onDelete,
+    required this.onTap,
+    required this.onDelete,
+    required this.onExport,
     super.key,
   });
 
@@ -15,10 +16,13 @@ class ListsList extends StatelessWidget {
   final Set<LoggyList> lists;
 
   /// The handler when a list is tapped.
-  final void Function(LoggyList list)? onTap;
+  final void Function(LoggyList list) onTap;
 
   /// The handler when a list is long-pressed.
-  final void Function(LoggyList list)? onDelete;
+  final void Function(LoggyList list) onDelete;
+
+  /// The handler when a list should be exported.
+  final void Function(LoggyList list) onExport;
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +31,14 @@ class ListsList extends StatelessWidget {
         final list = lists.elementAt(index);
         return ListTile(
           title: Text(list.name),
-          onTap: () => onTap?.call(list),
+          onTap: () => onTap(list),
           leading: IconButton(
-            onPressed: () => onDelete?.call(list),
+            onPressed: () => onDelete(list),
             icon: const Icon(Icons.delete),
+          ),
+          trailing: IconButton(
+            onPressed: () => onExport(list),
+            icon: const Icon(Icons.copy),
           ),
         );
       },
