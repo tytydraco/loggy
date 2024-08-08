@@ -24,28 +24,9 @@ class _EntriesScreenState extends State<EntriesScreen>
   late final _list = context.read<LoggyList>();
   late final _listSaveNotifier = context.read<ListSaveNotifier>();
 
-  Future<void> _addNewEntry() async {
-    final entry = await Navigator.push(
-      context,
-      MaterialPageRoute<Entry>(
-        builder: (context) => Provider.value(
-          value: _list,
-          updateShouldNotify: (_, __) => false,
-          child: const EditScreen(),
-        ),
-      ),
-    );
-
-    if (entry != null) {
-      setState(() {
-        _list.entries.add(entry);
-      });
-
-      _listSaveNotifier.save();
-    }
-  }
-
-  Future<void> _editEntry(Entry entry) async {
+  /// Edit an existing entry or create a new one by passing null as the [entry].
+  Future<void> _editEntry({Entry? entry}) async {
+    // Take user to the edit screen to create a new entry.
     final newEntry = await Navigator.push(
       context,
       MaterialPageRoute<Entry>(
@@ -57,14 +38,15 @@ class _EntriesScreenState extends State<EntriesScreen>
       ),
     );
 
-    if (newEntry != null) {
-      setState(() {
-        _list.entries.remove(entry);
-        _list.entries.add(newEntry);
-      });
+    if (newEntry == null) return;
 
-      _listSaveNotifier.save();
-    }
+    setState(() {
+      // If this is an edited entry, remove the old, outdated entry.
+      if (entry != null) _list.entries.remove(entry);
+      _list.entries.add(newEntry);
+    });
+
+    _listSaveNotifier.save();
   }
 
   Future<void> _deleteEntry(Entry entry) async {
@@ -89,13 +71,13 @@ class _EntriesScreenState extends State<EntriesScreen>
         ) ??
         false;
 
-    if (confirmed) {
-      setState(() {
-        _list.entries.remove(entry);
-      });
+    if (!confirmed) return;
 
-      _listSaveNotifier.save();
-    }
+    setState(() {
+      _list.entries.remove(entry);
+    });
+
+    _listSaveNotifier.save();
   }
 
   Future<void> _exportEntries() async {
@@ -166,14 +148,14 @@ class _EntriesScreenState extends State<EntriesScreen>
           final entry = _list.entries.elementAt(index);
           return EntryItem(
             entry,
-            onEdit: () => _editEntry(entry),
+            onEdit: () => _editEntry(entry: entry),
             onDelete: () => _deleteEntry(entry),
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'entries_new',
-        onPressed: () async => _addNewEntry(),
+        onPressed: () async => _editEntry(),
         tooltip: 'New',
         child: const Icon(Icons.add),
       ),

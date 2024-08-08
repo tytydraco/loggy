@@ -81,10 +81,11 @@ class _TrackablesScreenState extends State<TrackablesScreen>
         ) ??
         false;
 
-    if (confirmed) {
+    if (!confirmed) return;
+
+    setState(() {
       _list.trackables.remove(trackable);
-      setState(() {});
-    }
+    });
 
     _listSaveNotifier.save();
   }

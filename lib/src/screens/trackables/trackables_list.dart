@@ -12,7 +12,7 @@ class TrackablesList extends StatelessWidget {
   /// The set of trackables.
   final Set<String> trackables;
 
-  /// The handler when a trackable is long-pressed.
+  /// The handler when a trackable should be deleted.
   final void Function(String trackable)? onDelete;
 
   @override

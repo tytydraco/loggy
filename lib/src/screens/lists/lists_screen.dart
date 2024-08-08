@@ -86,46 +86,46 @@ class _ListsScreenState extends State<ListsScreen>
         ) ??
         false;
 
-    if (confirmed) {
+    if (!confirmed) return;
+
+    setState(() {
       _listStorage.lists.remove(list);
-      await _listStorage.write();
-      setState(() {});
-    }
+    });
+    await _listStorage.write();
   }
 
+  /// Selects the list and moves to [HomeScreen].
   Future<void> _selectList(LoggyList list) async {
-    if (mounted) {
-      // Keep track of when the list is updated to update the storage copy.
-      final listSaveNotifier = ListSaveNotifier()
-        ..addListener(
-          () async {
-            _listStorage.lists.removeWhere(
-              (element) => element.name == list.name,
-            );
-            _listStorage.lists.add(list);
+    // Keep track of when the list is updated to update the storage copy.
+    final listSaveNotifier = ListSaveNotifier()
+      ..addListener(
+        () async {
+          _listStorage.lists.removeWhere(
+            (element) => element.name == list.name,
+          );
+          _listStorage.lists.add(list);
 
-            await _listStorage.write();
-          },
-        );
-
-      await Navigator.push(
-        context,
-        MaterialPageRoute<void>(
-          builder: (_) {
-            return MultiProvider(
-              providers: [
-                ChangeNotifierProvider.value(value: listSaveNotifier),
-                Provider.value(value: list),
-              ],
-              child: const HomeScreen(),
-            );
-          },
-        ),
+          await _listStorage.write();
+        },
       );
 
-      // Stop listening to save notifications.
-      listSaveNotifier.dispose();
-    }
+    await Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        builder: (_) {
+          return MultiProvider(
+            providers: [
+              ChangeNotifierProvider.value(value: listSaveNotifier),
+              Provider.value(value: list),
+            ],
+            child: const HomeScreen(),
+          );
+        },
+      ),
+    );
+
+    // Stop listening to save notifications when we return.
+    listSaveNotifier.dispose();
   }
 
   @override
@@ -142,10 +142,7 @@ class _ListsScreenState extends State<ListsScreen>
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'lists_new',
-        onPressed: () async {
-          await _addList();
-          setState(() {});
-        },
+        onPressed: _addList,
         tooltip: 'New',
         child: const Icon(Icons.add),
       ),

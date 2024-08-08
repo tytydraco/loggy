@@ -69,8 +69,10 @@ class _EditScreenState extends State<EditScreen> {
 
     final editedEntry = _getEditedEntry();
 
-    // Exit if no changes were made.
-    if (widget.initialEntry != null && widget.initialEntry == editedEntry) {
+    // Exit if this a new entry with no selections,
+    // or if the initial entry is the same as this new entry.
+    if ((widget.initialEntry == null && editedEntry == null) ||
+        (widget.initialEntry != null && widget.initialEntry == editedEntry)) {
       Navigator.pop(context);
       return;
     }
@@ -111,15 +113,79 @@ class _EditScreenState extends State<EditScreen> {
   }
 
   Entry? _getEditedEntry() {
-    if (_ratingIndex != null) {
-      return Entry(
-        timestamp: _date,
-        rating: defaultRatingScale[_ratingIndex!],
-        trackables: _getCheckedTrackables(),
-      );
-    }
+    if (_ratingIndex == null) return null;
 
-    return null;
+    return Entry(
+      timestamp: _date,
+      rating: defaultRatingScale[_ratingIndex!],
+      trackables: _getCheckedTrackables(),
+    );
+  }
+
+  Widget _buildDateTimeSelector() {
+    return OutlinedButton(
+      onPressed: () async {
+        final newDate = await _selectTimestamp(_date);
+        if (newDate != null) {
+          setState(() {
+            _date = newDate;
+          });
+        }
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Text(_dateStringFormatter.format(_date)),
+      ),
+    );
+  }
+
+  Widget _buildRatingSelector() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: RatingToggleGroup(
+            defaultRatingScale,
+            initialSelection: _ratingIndex,
+            onSelected: (index) => _ratingIndex = index,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTrackablesSelector() {
+    return ListView.separated(
+      itemBuilder: (_, index) {
+        final trackable = _list.trackables.elementAt(index);
+        return CheckboxListTile(
+          title: Text(trackable),
+          value: _trackablesChecked.putIfAbsent(
+            trackable,
+            () => false,
+          ),
+          onChanged: (value) {
+            setState(() {
+              _trackablesChecked[trackable] = value!;
+            });
+          },
+        );
+      },
+      separatorBuilder: (_, __) => const Divider(),
+      itemCount: _list.trackables.length,
+    );
+  }
+
+  void _saveEntry() {
+    final editedEntry = _getEditedEntry();
+    if (editedEntry == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Entry is incomplete.')),
+      );
+    } else {
+      Navigator.pop(context, editedEntry);
+    }
   }
 
   @override
@@ -135,74 +201,15 @@ class _EditScreenState extends State<EditScreen> {
           padding: const EdgeInsets.all(8),
           child: Column(
             children: [
-              // Date and time.
-              OutlinedButton(
-                onPressed: () async {
-                  final newDate = await _selectTimestamp(_date);
-                  if (newDate != null) {
-                    setState(() {
-                      _date = newDate;
-                    });
-                  }
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Text(_dateStringFormatter.format(_date)),
-                ),
-              ),
-
-              // Rating selection.
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: RatingToggleGroup(
-                      defaultRatingScale,
-                      initialSelection: _ratingIndex,
-                      onSelected: (index) => _ratingIndex = index,
-                    ),
-                  ),
-                ),
-              ),
-
-              // Trackable selection.
-              Expanded(
-                child: ListView.separated(
-                  itemBuilder: (_, index) {
-                    final trackable = _list.trackables.elementAt(index);
-                    return CheckboxListTile(
-                      title: Text(trackable),
-                      value: _trackablesChecked.putIfAbsent(
-                        trackable,
-                        () => false,
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          _trackablesChecked[trackable] = value!;
-                        });
-                      },
-                    );
-                  },
-                  separatorBuilder: (_, __) => const Divider(),
-                  itemCount: _list.trackables.length,
-                ),
-              ),
+              _buildDateTimeSelector(),
+              _buildRatingSelector(),
+              Expanded(child: _buildTrackablesSelector()),
             ],
           ),
         ),
         floatingActionButton: FloatingActionButton(
           heroTag: 'edit_save',
-          onPressed: () {
-            final editedEntry = _getEditedEntry();
-            if (editedEntry == null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Entry is incomplete.')),
-              );
-            } else {
-              Navigator.pop(context, editedEntry);
-            }
-          },
+          onPressed: _saveEntry,
           tooltip: 'Save',
           child: const Icon(Icons.save),
         ),

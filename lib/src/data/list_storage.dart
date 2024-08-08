@@ -9,7 +9,7 @@ class ListStorage {
   /// The preference key for the lists.
   static const listsPrefKey = 'lists';
 
-  /// Up-to-date set of lists sorted alphabetically.
+  /// Up-to-date local copy set of lists sorted alphabetically.
   Set<LoggyList> lists = SplayTreeSet((t1, t2) => t1.name.compareTo(t2.name));
 
   late SharedPreferences _sharedPrefs;

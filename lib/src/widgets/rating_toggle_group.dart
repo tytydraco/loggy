@@ -45,10 +45,11 @@ class _RatingToggleGroupState extends State<RatingToggleGroup> {
       onPressed: (index) {
         if (widget.onSelected == null) return;
 
-        widget.onSelected?.call(index);
         setState(() {
           _selectedIndex = index;
         });
+
+        widget.onSelected?.call(index);
       },
       borderWidth: 2,
       borderColor: Colors.transparent,

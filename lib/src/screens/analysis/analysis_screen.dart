@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loggy/src/models/loggy_list.dart';
-import 'package:loggy/src/utils/trackables_correlations.dart';
+import 'package:loggy/src/screens/analysis/trackables_correlations.dart';
 import 'package:provider/provider.dart';
 
 /// Perform analysis for entries.
@@ -20,7 +20,9 @@ class _AnalysisScreenState extends State<AnalysisScreen>
   Widget build(BuildContext context) {
     super.build(context);
 
-    final coefficients = _calculateCorrelations();
+    // Calculate correlational coefficients.
+    final trackablesCorrelations = TrackablesCorrelations(_list.entries);
+    final coefficients = trackablesCorrelations.calculateAll(_list.trackables);
 
     return Scaffold(
       appBar: AppBar(
@@ -32,12 +34,15 @@ class _AnalysisScreenState extends State<AnalysisScreen>
           final percentage = (data.value * 100).round();
           var prettyPercentage = '$percentage%';
 
+          // Format for explicit sign and red/green color indicator for
+          // positive/negative correlation.
           Color? textColor;
           if (percentage > 0) {
             textColor = Colors.green;
             prettyPercentage = '+$prettyPercentage';
+          } else if (percentage < 0) {
+            textColor = Colors.red;
           }
-          if (percentage < 0) textColor = Colors.red;
 
           return ListTile(
             title: Text(data.key),
@@ -54,11 +59,6 @@ class _AnalysisScreenState extends State<AnalysisScreen>
         itemCount: coefficients.length,
       ),
     );
-  }
-
-  Map<String, double> _calculateCorrelations() {
-    final trackablesCorrelations = TrackablesCorrelations(_list.entries);
-    return trackablesCorrelations.calculateAll(_list.trackables);
   }
 
   @override

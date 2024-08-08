@@ -14,16 +14,16 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _pageController = PageController();
-  var _currentIndex = 0;
+  var _currentPageIndex = 0;
 
-  final _analysisKey = GlobalKey();
+  final _analysisScreenKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
     final pages = [
       const EntriesScreen(),
       const TrackablesScreen(),
-      AnalysisScreen(key: _analysisKey),
+      AnalysisScreen(key: _analysisScreenKey),
     ];
 
     return Scaffold(
@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: pages,
         onPageChanged: (index) {
           setState(() {
-            _currentIndex = index;
+            _currentPageIndex = index;
           });
         },
       ),
@@ -51,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Analysis',
           ),
         ],
-        currentIndex: _currentIndex,
+        currentIndex: _currentPageIndex,
         onTap: (index) {
           setState(() {
             _pageController.jumpToPage(index);
