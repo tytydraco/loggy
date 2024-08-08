@@ -4,12 +4,18 @@ import 'package:loggy/src/data/constants.dart';
 import 'package:loggy/src/models/entry.dart';
 import 'package:loggy/src/models/loggy_list.dart';
 import 'package:loggy/src/widgets/rating_toggle_group.dart';
-import 'package:provider/provider.dart';
 
 /// Edit an entry or add a new one.
 class EditScreen extends StatefulWidget {
   /// Creates a new [EditScreen].
-  const EditScreen({super.key, this.initialEntry});
+  const EditScreen({
+    required this.list,
+    this.initialEntry,
+    super.key,
+  });
+
+  /// The list to work with.
+  final LoggyList list;
 
   /// The initial entry to edit, if specified.
   final Entry? initialEntry;
@@ -19,8 +25,6 @@ class EditScreen extends StatefulWidget {
 }
 
 class _EditScreenState extends State<EditScreen> {
-  late final _list = context.read<LoggyList>();
-
   late int? _ratingIndex = widget.initialEntry?.rating.value;
   late DateTime _date = widget.initialEntry != null
       ? widget.initialEntry!.timestamp
@@ -158,7 +162,7 @@ class _EditScreenState extends State<EditScreen> {
   Widget _buildTrackablesSelector() {
     return ListView.separated(
       itemBuilder: (_, index) {
-        final trackable = _list.trackables.elementAt(index);
+        final trackable = widget.list.trackables.elementAt(index);
         return CheckboxListTile(
           title: Text(trackable),
           value: _trackablesChecked.putIfAbsent(
@@ -173,7 +177,7 @@ class _EditScreenState extends State<EditScreen> {
         );
       },
       separatorBuilder: (_, __) => const Divider(),
-      itemCount: _list.trackables.length,
+      itemCount: widget.list.trackables.length,
     );
   }
 

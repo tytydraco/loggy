@@ -28,10 +28,9 @@ class _EntriesScreenState extends State<EntriesScreen>
     final newEntry = await Navigator.push(
       context,
       MaterialPageRoute<Entry>(
-        builder: (context) => Provider.value(
-          value: _listInstance.list,
-          updateShouldNotify: (_, __) => false,
-          child: EditScreen(initialEntry: entry),
+        builder: (context) => EditScreen(
+          list: _listInstance.list,
+          initialEntry: entry,
         ),
       ),
     );
