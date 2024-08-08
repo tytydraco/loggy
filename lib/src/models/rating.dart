@@ -1,9 +1,13 @@
 import 'dart:ui';
 
+import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
+
+part 'rating.g.dart';
 
 /// An entry rating.
 @immutable
+@JsonSerializable()
 class Rating {
   /// Creates a new [Rating].
   const Rating({
@@ -13,13 +17,7 @@ class Rating {
   });
 
   /// Creates a new [Rating] from a JSON map.
-  factory Rating.fromJson(Map<String, dynamic> json) {
-    return Rating(
-      value: json['value'] as int,
-      name: json['name'] as String,
-      color: Color(json['color'] as int),
-    );
-  }
+  factory Rating.fromJson(Map<String, dynamic> json) => _$RatingFromJson(json);
 
   /// The integer value.
   final int value;
@@ -28,16 +26,11 @@ class Rating {
   final String name;
 
   /// The rating color.
+  @_ColorJsonConverter()
   final Color color;
 
   /// Converts the rating to a JSON object.
-  Map<String, dynamic> toJson() {
-    return {
-      'value': value,
-      'name': name,
-      'color': color.value,
-    };
-  }
+  Map<String, dynamic> toJson() => _$RatingToJson(this);
 
   @override
   bool operator ==(Object other) =>
@@ -49,4 +42,14 @@ class Rating {
 
   @override
   int get hashCode => Object.hash(value, name, color.value);
+}
+
+class _ColorJsonConverter extends JsonConverter<Color, int> {
+  const _ColorJsonConverter();
+
+  @override
+  Color fromJson(int value) => Color(value);
+
+  @override
+  int toJson(Color color) => color.value;
 }

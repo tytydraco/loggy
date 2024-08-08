@@ -1,8 +1,12 @@
 import 'package:flutter/foundation.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:loggy/src/models/rating.dart';
+
+part 'entry.g.dart';
 
 /// Tracking entry.
 @immutable
+@JsonSerializable()
 class Entry {
   /// Creates a new [Entry].
   const Entry({
@@ -12,15 +16,10 @@ class Entry {
   });
 
   /// Creates a new [Entry] from a JSON map.
-  factory Entry.fromJson(Map<String, dynamic> json) {
-    return Entry(
-      timestamp: DateTime.fromMillisecondsSinceEpoch(json['timestamp'] as int),
-      rating: Rating.fromJson(json['rating'] as Map<String, dynamic>),
-      trackables: (json['trackables'] as List<dynamic>?)?.cast<String>(),
-    );
-  }
+  factory Entry.fromJson(Map<String, dynamic> json) => _$EntryFromJson(json);
 
   /// The creation timestamp in milliseconds since epoch.
+  @_TimestampJsonConverter()
   final DateTime timestamp;
 
   /// The rating value.
@@ -30,13 +29,7 @@ class Entry {
   final List<String>? trackables;
 
   /// Converts the entry to a JSON object.
-  Map<String, dynamic> toJson() {
-    return {
-      'timestamp': timestamp.millisecondsSinceEpoch,
-      'rating': rating,
-      'trackables': trackables,
-    };
-  }
+  Map<String, dynamic> toJson() => _$EntryToJson(this);
 
   @override
   bool operator ==(Object other) =>
@@ -48,4 +41,14 @@ class Entry {
 
   @override
   int get hashCode => Object.hash(timestamp, rating, trackables);
+}
+
+class _TimestampJsonConverter extends JsonConverter<DateTime, int> {
+  const _TimestampJsonConverter();
+
+  @override
+  DateTime fromJson(int value) => DateTime.fromMillisecondsSinceEpoch(value);
+
+  @override
+  int toJson(DateTime dateTime) => dateTime.millisecondsSinceEpoch;
 }

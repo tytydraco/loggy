@@ -1,4 +1,7 @@
 basil:
+  code_generation:
+    cmds:
+      - 'flutter pub run build_runner build --delete-conflicting-outputs'
   build_web:
     cmds:
       - 'flutter build web --release --web-renderer html --base-href "/build/web/"'
