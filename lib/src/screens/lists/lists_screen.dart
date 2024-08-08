@@ -5,7 +5,7 @@ import 'package:loggy/src/data/list_storage.dart';
 import 'package:loggy/src/models/loggy_list.dart';
 import 'package:loggy/src/screens/home/home_screen.dart';
 import 'package:loggy/src/screens/lists/lists_list.dart';
-import 'package:loggy/src/utils/list_save_notifier.dart';
+import 'package:loggy/src/utils/list_instance.dart';
 import 'package:provider/provider.dart';
 
 /// Manage lists.
@@ -58,8 +58,7 @@ class _ListsScreenState extends State<ListsScreen>
       trackables: const {},
     );
 
-    _listStorage.lists.add(newList);
-    await _listStorage.write();
+    await _listStorage.addList(newList);
 
     setState(() {});
   }
@@ -88,47 +87,25 @@ class _ListsScreenState extends State<ListsScreen>
 
     if (!confirmed) return;
 
-    setState(() {
-      _listStorage.lists.remove(list);
-    });
-    await _listStorage.write();
+    await _listStorage.deleteList(list);
+    setState(() {});
   }
 
   /// Selects the list and moves to [HomeScreen].
   Future<void> _selectList(LoggyList list) async {
-    // Keep track of when the list is updated to update the storage copy.
-    final listSaveNotifier = ListSaveNotifier()
-      ..addListener(
-        () async {
-          _listStorage.lists.removeWhere(
-            (element) => element.name == list.name,
-          );
-          _listStorage.lists.add(list);
-
-          await _listStorage.write();
-        },
-      );
+    // Pass containerized list instance to prevent backwards synchronization
+    // issues.
+    final listInstance = ListInstance(list, _listStorage);
 
     await Navigator.push(
       context,
       MaterialPageRoute<void>(
-        builder: (_) {
-          return MultiProvider(
-            providers: [
-              ChangeNotifierProvider.value(value: listSaveNotifier),
-              Provider.value(
-                value: list,
-                updateShouldNotify: (_, __) => false,
-              ),
-            ],
-            child: const HomeScreen(),
-          );
-        },
+        builder: (_) => Provider.value(
+          value: listInstance,
+          child: const HomeScreen(),
+        ),
       ),
     );
-
-    // Stop listening to save notifications when we return.
-    listSaveNotifier.dispose();
   }
 
   @override

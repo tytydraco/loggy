@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:loggy/src/models/loggy_list.dart';
 import 'package:loggy/src/screens/analysis/trackables_correlations.dart';
+import 'package:loggy/src/utils/list_instance.dart';
 import 'package:provider/provider.dart';
 
 /// Perform analysis for entries.
@@ -14,15 +14,17 @@ class AnalysisScreen extends StatefulWidget {
 
 class _AnalysisScreenState extends State<AnalysisScreen>
     with AutomaticKeepAliveClientMixin {
-  late final _list = context.read<LoggyList>();
+  late final _listInstance = context.read<ListInstance>();
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
     // Calculate correlational coefficients.
-    final trackablesCorrelations = TrackablesCorrelations(_list.entries);
-    final coefficients = trackablesCorrelations.calculateAll(_list.trackables);
+    final trackablesCorrelations =
+        TrackablesCorrelations(_listInstance.list.entries);
+    final coefficients =
+        trackablesCorrelations.calculateAll(_listInstance.list.trackables);
 
     return Scaffold(
       appBar: AppBar(

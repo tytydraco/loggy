@@ -15,7 +15,7 @@ class ListStorage {
   late SharedPreferences _sharedPrefs;
 
   /// Prepare the shared preferences.
-  Future<void> init({String? suffix}) async {
+  Future<void> init() async {
     _sharedPrefs = await SharedPreferences.getInstance();
     lists.addAll(await getAllLists());
   }
@@ -41,9 +41,26 @@ class ListStorage {
     await _sharedPrefs.setStringList(listsPrefKey, jsonEntries);
   }
 
-  /// Write the internal lists to storage. Use this when [lists] is updated but
-  /// [setAllLists] is not called to keep storage and local copy up-to-date.
-  Future<void> write() async {
+  /// Add a list.
+  Future<void> addList(LoggyList list) async {
+    lists.add(list);
+
+    await setAllLists(lists);
+  }
+
+  /// Delete a list.
+  Future<void> deleteList(LoggyList list) async {
+    lists.remove(list);
+
+    await setAllLists(lists);
+  }
+
+  /// Replace a list with a new instance of itself.
+  Future<void> updateList(LoggyList list) async {
+    lists
+      ..removeWhere((e) => e.name == list.name)
+      ..add(list);
+
     await setAllLists(lists);
   }
 }

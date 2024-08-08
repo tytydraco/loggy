@@ -4,10 +4,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:loggy/src/models/entry.dart';
-import 'package:loggy/src/models/loggy_list.dart';
 import 'package:loggy/src/screens/edit/edit_screen.dart';
 import 'package:loggy/src/screens/entries/entry_item.dart';
-import 'package:loggy/src/utils/list_save_notifier.dart';
+import 'package:loggy/src/utils/list_instance.dart';
 import 'package:provider/provider.dart';
 
 /// The entries screen.
@@ -21,8 +20,7 @@ class EntriesScreen extends StatefulWidget {
 
 class _EntriesScreenState extends State<EntriesScreen>
     with AutomaticKeepAliveClientMixin {
-  late final _list = context.read<LoggyList>();
-  late final _listSaveNotifier = context.read<ListSaveNotifier>();
+  late final _listInstance = context.read<ListInstance>();
 
   /// Edit an existing entry or create a new one by passing null as the [entry].
   Future<void> _editEntry({Entry? entry}) async {
@@ -31,7 +29,7 @@ class _EntriesScreenState extends State<EntriesScreen>
       context,
       MaterialPageRoute<Entry>(
         builder: (context) => Provider.value(
-          value: _list,
+          value: _listInstance.list,
           updateShouldNotify: (_, __) => false,
           child: EditScreen(initialEntry: entry),
         ),
@@ -42,11 +40,11 @@ class _EntriesScreenState extends State<EntriesScreen>
 
     setState(() {
       // If this is an edited entry, remove the old, outdated entry.
-      if (entry != null) _list.entries.remove(entry);
-      _list.entries.add(newEntry);
+      if (entry != null) _listInstance.list.entries.remove(entry);
+      _listInstance.list.entries.add(newEntry);
     });
 
-    _listSaveNotifier.save();
+    await _listInstance.save();
   }
 
   Future<void> _deleteEntry(Entry entry) async {
@@ -74,14 +72,14 @@ class _EntriesScreenState extends State<EntriesScreen>
     if (!confirmed) return;
 
     setState(() {
-      _list.entries.remove(entry);
+      _listInstance.list.entries.remove(entry);
     });
 
-    _listSaveNotifier.save();
+    await _listInstance.save();
   }
 
   Future<void> _exportEntries() async {
-    final json = jsonEncode(_list.entries.toList());
+    final json = jsonEncode(_listInstance.list.entries.toList());
     final base64 = base64Encode(utf8.encode(json));
     await Clipboard.setData(ClipboardData(text: base64));
 
@@ -104,7 +102,7 @@ class _EntriesScreenState extends State<EntriesScreen>
             .map((e) => Entry.fromJson(e as Map<String, dynamic>));
 
         setState(() {
-          _list.entries
+          _listInstance.list.entries
             ..clear()
             ..addAll(Set.from(entries));
         });
@@ -142,10 +140,10 @@ class _EntriesScreenState extends State<EntriesScreen>
         ],
       ),
       body: ListView.separated(
-        itemCount: _list.entries.length,
+        itemCount: _listInstance.list.entries.length,
         separatorBuilder: (_, __) => const Divider(),
         itemBuilder: (_, index) {
-          final entry = _list.entries.elementAt(index);
+          final entry = _listInstance.list.entries.elementAt(index);
           return EntryItem(
             entry,
             onEdit: () => _editEntry(entry: entry),
