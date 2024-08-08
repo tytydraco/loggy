@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:loggy/src/models/entry.dart';
@@ -9,11 +11,7 @@ part 'loggy_list.g.dart';
 @JsonSerializable()
 class LoggyList {
   /// Creates a new [LoggyList].
-  const LoggyList({
-    required this.name,
-    required this.entries,
-    required this.trackables,
-  });
+  LoggyList({required this.name});
 
   /// Creates a new [LoggyList] from a JSON map.
   factory LoggyList.fromJson(Map<String, dynamic> json) =>
@@ -23,10 +21,40 @@ class LoggyList {
   final String name;
 
   /// The list entries.
-  final Set<Entry> entries;
+  Set<Entry> get entries => _sortedEntries;
+
+  set entries(Set<Entry> entries) {
+    final newSortedEntries = SplayTreeSet<Entry>.from(
+      entries,
+      (e1, e2) => e2.timestamp.compareTo(e1.timestamp),
+    );
+
+    _sortedEntries
+      ..clear()
+      ..addAll(newSortedEntries);
+  }
 
   /// The list trackables.
-  final Set<String> trackables;
+  Set<String> get trackables => _sortedTrackables;
+
+  set trackables(Set<String> trackables) {
+    final newSortedTrackables = SplayTreeSet<String>.from(
+      trackables,
+      (e1, e2) => e1.compareTo(e2),
+    );
+
+    _sortedTrackables
+      ..clear()
+      ..addAll(newSortedTrackables);
+  }
+
+  final _sortedEntries = SplayTreeSet<Entry>(
+    (e1, e2) => e2.timestamp.compareTo(e1.timestamp),
+  );
+
+  final _sortedTrackables = SplayTreeSet<String>(
+    (e1, e2) => e1.compareTo(e2),
+  );
 
   /// Converts the entry to a JSON object.
   Map<String, dynamic> toJson() => _$LoggyListToJson(this);

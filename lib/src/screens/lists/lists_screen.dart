@@ -52,11 +52,7 @@ class _ListsScreenState extends State<ListsScreen>
 
     if (newListName == null) return;
 
-    final newList = LoggyList(
-      name: newListName,
-      entries: const {},
-      trackables: const {},
-    );
+    final newList = LoggyList(name: newListName);
 
     await _listStorage.addList(newList);
 

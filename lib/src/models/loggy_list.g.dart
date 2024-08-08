@@ -8,12 +8,12 @@ part of 'loggy_list.dart';
 
 LoggyList _$LoggyListFromJson(Map<String, dynamic> json) => LoggyList(
       name: json['name'] as String,
-      entries: (json['entries'] as List<dynamic>)
+    )
+      ..entries = (json['entries'] as List<dynamic>)
           .map((e) => Entry.fromJson(e as Map<String, dynamic>))
-          .toSet(),
-      trackables:
-          (json['trackables'] as List<dynamic>).map((e) => e as String).toSet(),
-    );
+          .toSet()
+      ..trackables =
+          (json['trackables'] as List<dynamic>).map((e) => e as String).toSet();
 
 Map<String, dynamic> _$LoggyListToJson(LoggyList instance) => <String, dynamic>{
       'name': instance.name,
