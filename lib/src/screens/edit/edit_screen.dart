@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:loggy/src/data/constants.dart';
-import 'package:loggy/src/data/local_storage.dart';
 import 'package:loggy/src/models/entry.dart';
+import 'package:loggy/src/models/loggy_list.dart';
 import 'package:loggy/src/widgets/rating_toggle_group.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +19,7 @@ class EditScreen extends StatefulWidget {
 }
 
 class _EditScreenState extends State<EditScreen> {
-  late final _localStorage = context.read<LocalStorage>();
+  late final _list = context.read<LoggyList>();
 
   late int? _ratingIndex = widget.initialEntry?.rating.value;
   late DateTime _date = widget.initialEntry != null
@@ -170,7 +170,7 @@ class _EditScreenState extends State<EditScreen> {
               Expanded(
                 child: ListView.separated(
                   itemBuilder: (_, index) {
-                    final trackable = _localStorage.trackables.elementAt(index);
+                    final trackable = _list.trackables.elementAt(index);
                     return CheckboxListTile(
                       title: Text(trackable),
                       value: _trackablesChecked.putIfAbsent(
@@ -185,7 +185,7 @@ class _EditScreenState extends State<EditScreen> {
                     );
                   },
                   separatorBuilder: (_, __) => const Divider(),
-                  itemCount: _localStorage.trackables.length,
+                  itemCount: _list.trackables.length,
                 ),
               ),
             ],

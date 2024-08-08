@@ -1,11 +1,13 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:loggy/src/data/local_storage.dart';
 import 'package:loggy/src/models/entry.dart';
+import 'package:loggy/src/models/loggy_list.dart';
 import 'package:loggy/src/screens/edit/edit_screen.dart';
 import 'package:loggy/src/screens/entries/entry_item.dart';
+import 'package:loggy/src/utils/list_save_notifier.dart';
 import 'package:provider/provider.dart';
 
 /// The entries screen.
@@ -19,26 +21,27 @@ class EntriesScreen extends StatefulWidget {
 
 class _EntriesScreenState extends State<EntriesScreen>
     with AutomaticKeepAliveClientMixin {
-  late final _localStorage = context.read<LocalStorage>();
+  late final _list = context.read<LoggyList>();
+  late final _listSaveNotifier = context.read<ListSaveNotifier>();
 
   Future<void> _addNewEntry() async {
     final entry = await Navigator.push(
       context,
       MaterialPageRoute<Entry>(
         builder: (context) => Provider.value(
-          value: _localStorage,
+          value: _list,
+          updateShouldNotify: (_, __) => false,
           child: const EditScreen(),
         ),
       ),
     );
 
     if (entry != null) {
-      await _localStorage.addEntry(entry);
+      setState(() {
+        _list.entries.add(entry);
+      });
 
-      // Sometimes the stored data differs from the internal state; synchronize.
-      await _localStorage.getAllEntries();
-
-      setState(() {});
+      _listSaveNotifier.save();
     }
   }
 
@@ -47,16 +50,20 @@ class _EntriesScreenState extends State<EntriesScreen>
       context,
       MaterialPageRoute<Entry>(
         builder: (context) => Provider.value(
-          value: _localStorage,
+          value: _list,
+          updateShouldNotify: (_, __) => false,
           child: EditScreen(initialEntry: entry),
         ),
       ),
     );
 
     if (newEntry != null) {
-      await _localStorage.deleteEntry(entry);
-      await _localStorage.addEntry(newEntry);
-      setState(() {});
+      setState(() {
+        _list.entries.remove(entry);
+        _list.entries.add(newEntry);
+      });
+
+      _listSaveNotifier.save();
     }
   }
 
@@ -83,13 +90,16 @@ class _EntriesScreenState extends State<EntriesScreen>
         false;
 
     if (confirmed) {
-      await _localStorage.deleteEntry(entry);
-      setState(() {});
+      setState(() {
+        _list.entries.remove(entry);
+      });
+
+      _listSaveNotifier.save();
     }
   }
 
   Future<void> _exportEntries() async {
-    final json = jsonEncode(_localStorage.entries.toList());
+    final json = jsonEncode(_list.entries.toList());
     final base64 = base64Encode(utf8.encode(json));
     await Clipboard.setData(ClipboardData(text: base64));
 
@@ -111,8 +121,11 @@ class _EntriesScreenState extends State<EntriesScreen>
         final entries = (jsonDecode(json) as List<dynamic>)
             .map((e) => Entry.fromJson(e as Map<String, dynamic>));
 
-        await _localStorage.setAllEntries(Set.from(entries));
-        setState(() {});
+        setState(() {
+          _list.entries
+            ..clear()
+            ..addAll(Set.from(entries));
+        });
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -147,10 +160,10 @@ class _EntriesScreenState extends State<EntriesScreen>
         ],
       ),
       body: ListView.separated(
-        itemCount: _localStorage.entries.length,
+        itemCount: _list.entries.length,
         separatorBuilder: (_, __) => const Divider(),
         itemBuilder: (_, index) {
-          final entry = _localStorage.entries.elementAt(index);
+          final entry = _list.entries.elementAt(index);
           return EntryItem(
             entry,
             onEdit: () => _editEntry(entry),

@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:loggy/src/data/list_storage.dart';
-import 'package:loggy/src/data/local_storage.dart';
+import 'package:loggy/src/models/loggy_list.dart';
 import 'package:loggy/src/screens/home/home_screen.dart';
 import 'package:loggy/src/screens/lists/lists_list.dart';
+import 'package:loggy/src/utils/list_save_notifier.dart';
 import 'package:provider/provider.dart';
 
 /// Manage lists.
@@ -19,7 +22,7 @@ class _ListsScreenState extends State<ListsScreen>
   late final _listStorage = context.read<ListStorage>();
 
   Future<void> _addList() async {
-    final newList = await showDialog<String?>(
+    final newListName = await showDialog<String?>(
       context: context,
       builder: (context) {
         final editController = TextEditingController();
@@ -47,14 +50,21 @@ class _ListsScreenState extends State<ListsScreen>
       },
     );
 
-    if (newList == null) return;
+    if (newListName == null) return;
 
-    await _listStorage.addList(newList);
+    final newList = LoggyList(
+      name: newListName,
+      entries: const {},
+      trackables: const {},
+    );
+
+    _listStorage.lists.add(newList);
+    await _listStorage.write();
 
     setState(() {});
   }
 
-  Future<void> _deleteList(String list) async {
+  Future<void> _deleteList(LoggyList list) async {
     final confirmed = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
@@ -77,25 +87,44 @@ class _ListsScreenState extends State<ListsScreen>
         false;
 
     if (confirmed) {
-      await _listStorage.deleteList(list);
+      _listStorage.lists.remove(list);
+      await _listStorage.write();
       setState(() {});
     }
   }
 
-  Future<void> _selectList(String list) async {
-    final localStorage = LocalStorage(suffix: list);
-    await localStorage.init();
-
+  Future<void> _selectList(LoggyList list) async {
     if (mounted) {
+      // Keep track of when the list is updated to update the storage copy.
+      final listSaveNotifier = ListSaveNotifier()
+        ..addListener(
+          () async {
+            _listStorage.lists.removeWhere(
+              (element) => element.name == list.name,
+            );
+            _listStorage.lists.add(list);
+
+            await _listStorage.write();
+          },
+        );
+
       await Navigator.push(
         context,
         MaterialPageRoute<void>(
-          builder: (_) => Provider.value(
-            value: localStorage,
-            child: const HomeScreen(),
-          ),
+          builder: (_) {
+            return MultiProvider(
+              providers: [
+                ChangeNotifierProvider.value(value: listSaveNotifier),
+                Provider.value(value: list),
+              ],
+              child: const HomeScreen(),
+            );
+          },
         ),
       );
+
+      // Stop listening to save notifications.
+      listSaveNotifier.dispose();
     }
   }
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:loggy/src/data/local_storage.dart';
+import 'package:loggy/src/models/loggy_list.dart';
 import 'package:loggy/src/utils/trackables_correlations.dart';
 import 'package:provider/provider.dart';
 
@@ -14,7 +14,7 @@ class AnalysisScreen extends StatefulWidget {
 
 class _AnalysisScreenState extends State<AnalysisScreen>
     with AutomaticKeepAliveClientMixin {
-  late final _localStorage = context.read<LocalStorage>();
+  late final _list = context.read<LoggyList>();
 
   @override
   Widget build(BuildContext context) {
@@ -57,9 +57,8 @@ class _AnalysisScreenState extends State<AnalysisScreen>
   }
 
   Map<String, double> _calculateCorrelations() {
-    final trackablesCorrelations =
-        TrackablesCorrelations(_localStorage.entries);
-    return trackablesCorrelations.calculateAll(_localStorage.trackables);
+    final trackablesCorrelations = TrackablesCorrelations(_list.entries);
+    return trackablesCorrelations.calculateAll(_list.trackables);
   }
 
   @override

@@ -2,8 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:loggy/src/data/local_storage.dart';
+import 'package:loggy/src/models/loggy_list.dart';
 import 'package:loggy/src/screens/trackables/trackables_list.dart';
+import 'package:loggy/src/utils/list_save_notifier.dart';
 import 'package:provider/provider.dart';
 
 /// Manage trackable activities.
@@ -17,7 +18,8 @@ class TrackablesScreen extends StatefulWidget {
 
 class _TrackablesScreenState extends State<TrackablesScreen>
     with AutomaticKeepAliveClientMixin {
-  late final _localStorage = context.read<LocalStorage>();
+  late final _list = context.read<LoggyList>();
+  late final _listSaveNotifier = context.read<ListSaveNotifier>();
 
   Future<void> _addTrackable() async {
     final newTrackable = await showDialog<String?>(
@@ -50,9 +52,11 @@ class _TrackablesScreenState extends State<TrackablesScreen>
 
     if (newTrackable == null) return;
 
-    await _localStorage.addTrackable(newTrackable);
+    setState(() {
+      _list.trackables.add(newTrackable);
+    });
 
-    setState(() {});
+    _listSaveNotifier.save();
   }
 
   Future<void> _deleteTrackable(String trackable) async {
@@ -78,13 +82,15 @@ class _TrackablesScreenState extends State<TrackablesScreen>
         false;
 
     if (confirmed) {
-      await _localStorage.deleteTrackable(trackable);
+      _list.trackables.remove(trackable);
       setState(() {});
     }
+
+    _listSaveNotifier.save();
   }
 
   Future<void> _exportTrackables() async {
-    final json = jsonEncode(_localStorage.trackables.toList());
+    final json = jsonEncode(_list.trackables.toList());
     final base64 = base64Encode(utf8.encode(json));
     await Clipboard.setData(ClipboardData(text: base64));
 
@@ -105,8 +111,13 @@ class _TrackablesScreenState extends State<TrackablesScreen>
         final json = utf8.decode(base64Decode(base64));
         final trackables = (jsonDecode(json) as List<dynamic>).cast<String>();
 
-        await _localStorage.setAllTrackables(Set.from(trackables));
-        setState(() {});
+        setState(() {
+          _list.trackables
+            ..clear()
+            ..addAll(Set.from(trackables));
+        });
+
+        _listSaveNotifier.save();
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -143,7 +154,7 @@ class _TrackablesScreenState extends State<TrackablesScreen>
         ],
       ),
       body: TrackablesList(
-        trackables: _localStorage.trackables,
+        trackables: _list.trackables,
         onDelete: _deleteTrackable,
       ),
       floatingActionButton: FloatingActionButton(

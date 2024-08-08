@@ -1,15 +1,16 @@
 import 'dart:collection';
+import 'dart:convert';
 
-import 'package:loggy/src/data/local_storage.dart';
+import 'package:loggy/src/models/loggy_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Manage lists.
 class ListStorage {
-  /// Up-to-date set of lists sorted alphabetically.
-  Set<String> lists = SplayTreeSet((t1, t2) => t1.compareTo(t2));
-
-  /// The shared preferences key for the entries.
+  /// The preference key for the lists.
   static const listsPrefKey = 'lists';
+
+  /// Up-to-date set of lists sorted alphabetically.
+  Set<LoggyList> lists = SplayTreeSet((t1, t2) => t1.name.compareTo(t2.name));
 
   late SharedPreferences _sharedPrefs;
 
@@ -20,44 +21,29 @@ class ListStorage {
   }
 
   /// Return a set of all stored lists.
-  Future<Set<String>> getAllLists() async {
-    final allLists = _sharedPrefs.getStringList(listsPrefKey) ?? [];
+  Future<Set<LoggyList>> getAllLists() async {
+    final allListsRaw = _sharedPrefs.getStringList(listsPrefKey) ?? [];
+    final allLists = allListsRaw.map((e) {
+      final json = jsonDecode(e) as Map<String, dynamic>;
+      return LoggyList.fromJson(json);
+    });
 
-    lists
-      ..clear()
-      ..addAll(allLists);
-
-    return lists.toSet();
+    return allLists.toSet();
   }
 
   /// Sets all stored lists.
-  Future<void> setAllLists(Set<String> newLists) async {
-    lists
-      ..clear()
-      ..addAll(newLists);
+  Future<void> setAllLists(Set<LoggyList> newLists) async {
+    final jsonEntries = newLists.map((e) {
+      final json = e.toJson();
+      return jsonEncode(json);
+    }).toList();
 
-    await _sharedPrefs.setStringList(listsPrefKey, lists.toList());
+    await _sharedPrefs.setStringList(listsPrefKey, jsonEntries);
   }
 
-  /// Add an list.
-  Future<void> addList(String list) async {
-    final allLists = await getAllLists();
-    allLists.add(list);
-    await setAllLists(allLists);
-
-    lists.add(list);
-  }
-
-  /// Delete an list.
-  Future<void> deleteList(String list) async {
-    final allLists = await getAllLists();
-    allLists.remove(list);
-    await setAllLists(allLists);
-
-    // Delete stored entries and trackables.
-    await _sharedPrefs.remove('${LocalStorage.entriesPrefKeyPrefix}$list');
-    await _sharedPrefs.remove('${LocalStorage.trackablesPrefKeyPrefix}$list');
-
-    lists.remove(list);
+  /// Write the internal lists to storage. Use this when [lists] is updated but
+  /// [setAllLists] is not called to keep storage and local copy up-to-date.
+  Future<void> write() async {
+    await setAllLists(lists);
   }
 }
