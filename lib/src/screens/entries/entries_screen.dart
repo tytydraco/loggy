@@ -46,7 +46,10 @@ class _EntriesScreenState extends State<EntriesScreen>
     final newEntry = await Navigator.push(
       context,
       MaterialPageRoute<Entry>(
-        builder: (context) => EditScreen(initialEntry: entry),
+        builder: (context) => Provider.value(
+          value: _localStorage,
+          child: EditScreen(initialEntry: entry),
+        ),
       ),
     );
 
