@@ -16,6 +16,20 @@ class _AnalysisScreenState extends State<AnalysisScreen>
     with AutomaticKeepAliveClientMixin {
   late final _listInstance = context.read<ListInstance>();
 
+  /// Called when the list is updated for any reason. Refresh the screen to
+  /// provide updated analysis.
+  void _listInstanceListener() {
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Listen for changes made to the list to update the analysis.
+    _listInstance.addListener(_listInstanceListener);
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -61,6 +75,12 @@ class _AnalysisScreenState extends State<AnalysisScreen>
         itemCount: coefficients.length,
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _listInstance.removeListener(_listInstanceListener);
+    super.dispose();
   }
 
   @override

@@ -96,7 +96,7 @@ class _ListsScreenState extends State<ListsScreen>
     await Navigator.push(
       context,
       MaterialPageRoute<void>(
-        builder: (_) => Provider.value(
+        builder: (_) => ChangeNotifierProvider.value(
           value: listInstance,
           child: const HomeScreen(),
         ),

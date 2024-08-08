@@ -16,14 +16,12 @@ class _HomeScreenState extends State<HomeScreen> {
   final _pageController = PageController();
   var _currentPageIndex = 0;
 
-  final _analysisScreenKey = GlobalKey();
-
   @override
   Widget build(BuildContext context) {
     final pages = [
       const EntriesScreen(),
       const TrackablesScreen(),
-      AnalysisScreen(key: _analysisScreenKey),
+      const AnalysisScreen(),
     ];
 
     return Scaffold(

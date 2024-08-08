@@ -4,7 +4,7 @@ import 'package:loggy/src/models/loggy_list.dart';
 
 /// A class passed to sub-screens with a copy of the [list] for editing and
 /// methods to save changes to persistent storage.
-class ListInstance {
+class ListInstance with ChangeNotifier {
   /// Creates a new [ListInstance] given a [list].
   ListInstance(this.list, this.listStorage);
 
@@ -20,5 +20,7 @@ class ListInstance {
 
     // Replace old list with new list.
     await listStorage.updateList(list);
+
+    notifyListeners();
   }
 }
