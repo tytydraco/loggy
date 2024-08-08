@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:loggy/src/data/constants.dart';
 import 'package:loggy/src/models/entry.dart';
 import 'package:loggy/src/models/loggy_list.dart';
-import 'package:loggy/src/widgets/rating_toggle_group.dart';
+import 'package:loggy/src/screens/edit/rating_toggle_group.dart';
 
 /// Edit an entry or add a new one.
 class EditScreen extends StatefulWidget {
