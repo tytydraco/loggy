@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:loggy/src/models/entry.dart';
 import 'package:loggy/src/screens/edit/edit_screen.dart';
 import 'package:loggy/src/screens/entries/entry_item.dart';
@@ -77,66 +75,12 @@ class _EntriesScreenState extends State<EntriesScreen>
     await _listInstance.save();
   }
 
-  Future<void> _exportEntries() async {
-    final json = jsonEncode(_listInstance.list.entries.toList());
-    final base64 = base64Encode(utf8.encode(json));
-    await Clipboard.setData(ClipboardData(text: base64));
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Copied entries to clipboard.')),
-      );
-    }
-  }
-
-  Future<void> _importEntries() async {
-    final clipboardData = await Clipboard.getData('text/plain');
-
-    if (clipboardData != null && clipboardData.text != null) {
-      final base64 = clipboardData.text!;
-
-      try {
-        final json = utf8.decode(base64Decode(base64));
-        final entries = (jsonDecode(json) as List<dynamic>)
-            .map((e) => Entry.fromJson(e as Map<String, dynamic>));
-
-        setState(() {
-          _listInstance.list.entries
-            ..clear()
-            ..addAll(Set.from(entries));
-        });
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Imported entries from clipboard.')),
-          );
-        }
-      } catch (_) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to parse clipboard.')),
-          );
-        }
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Entries'),
-        actions: [
-          IconButton(
-            onPressed: _exportEntries,
-            icon: const Icon(Icons.upload),
-          ),
-          IconButton(
-            onPressed: _importEntries,
-            icon: const Icon(Icons.download),
-          ),
-        ],
       ),
       body: ListView.separated(
         itemCount: _listInstance.list.entries.length,

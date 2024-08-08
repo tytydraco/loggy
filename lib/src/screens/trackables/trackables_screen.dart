@@ -1,7 +1,4 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:loggy/src/screens/trackables/trackables_list.dart';
 import 'package:loggy/src/utils/list_instance.dart';
 import 'package:provider/provider.dart';
@@ -88,69 +85,12 @@ class _TrackablesScreenState extends State<TrackablesScreen>
     await _listInstance.save();
   }
 
-  Future<void> _exportTrackables() async {
-    final json = jsonEncode(_listInstance.list.trackables.toList());
-    final base64 = base64Encode(utf8.encode(json));
-    await Clipboard.setData(ClipboardData(text: base64));
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Copied trackables to clipboard.')),
-      );
-    }
-  }
-
-  Future<void> _importTrackables() async {
-    final clipboardData = await Clipboard.getData('text/plain');
-
-    if (clipboardData != null && clipboardData.text != null) {
-      final base64 = clipboardData.text!;
-
-      try {
-        final json = utf8.decode(base64Decode(base64));
-        final trackables = (jsonDecode(json) as List<dynamic>).cast<String>();
-
-        setState(() {
-          _listInstance.list.trackables
-            ..clear()
-            ..addAll(Set.from(trackables));
-        });
-
-        await _listInstance.save();
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Imported trackables from clipboard.'),
-            ),
-          );
-        }
-      } catch (_) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to parse clipboard.')),
-          );
-        }
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Trackables'),
-        actions: [
-          IconButton(
-            onPressed: _exportTrackables,
-            icon: const Icon(Icons.upload),
-          ),
-          IconButton(
-            onPressed: _importTrackables,
-            icon: const Icon(Icons.download),
-          ),
-        ],
       ),
       body: TrackablesList(
         trackables: _listInstance.list.trackables,
