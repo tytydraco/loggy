@@ -29,6 +29,10 @@ class _LoggyState extends State<Loggy> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      darkTheme: ThemeData(
+        primaryColor: Colors.blue,
+        brightness: Brightness.dark,
+      ),
       home: Provider.value(
         value: _listStorage,
         child: const ListsScreen(),
