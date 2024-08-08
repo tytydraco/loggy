@@ -68,9 +68,7 @@ class _EditScreenState extends State<EditScreen> {
     return selectedDate;
   }
 
-  Future<void> _confirmExit(bool didPop) async {
-    if (didPop) return;
-
+  Future<void> _confirmExit() async {
     final editedEntry = _getEditedEntry();
 
     // Exit if this a new entry with no selections,
@@ -196,7 +194,10 @@ class _EditScreenState extends State<EditScreen> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: _confirmExit,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        await _confirmExit();
+      },
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Edit'),
