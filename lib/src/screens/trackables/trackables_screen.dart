@@ -16,14 +16,15 @@ class _TrackablesScreenState extends State<TrackablesScreen>
     with AutomaticKeepAliveClientMixin {
   late final _listInstance = context.read<ListInstance>();
 
-  Future<void> _addTrackable() async {
+  Future<void> _editTrackable({String? initialTrackable}) async {
     final newTrackable = await showDialog<String?>(
       context: context,
       builder: (context) {
         final editController = TextEditingController();
+        if (initialTrackable != null) editController.text = initialTrackable;
 
         return AlertDialog(
-          title: const Text('Add'),
+          title: Text(initialTrackable == null ? 'Add' : 'Edit'),
           content: TextField(
             controller: editController,
             onSubmitted: (text) => Navigator.pop(context, text),
@@ -45,7 +46,12 @@ class _TrackablesScreenState extends State<TrackablesScreen>
       },
     );
 
-    if (newTrackable == null) return;
+    if (newTrackable == null || newTrackable == initialTrackable) return;
+
+    // If edited, delete the old trackable first.
+    if (initialTrackable != null) {
+      _listInstance.list.trackables.remove(initialTrackable);
+    }
 
     setState(() {
       _listInstance.list.trackables.add(newTrackable);
@@ -94,11 +100,15 @@ class _TrackablesScreenState extends State<TrackablesScreen>
       ),
       body: TrackablesList(
         trackables: _listInstance.list.trackables,
+        onEdit: (trackable) => _editTrackable(initialTrackable: trackable),
         onDelete: _deleteTrackable,
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'trackables_new',
-        onPressed: _addTrackable,
+        onPressed: () async {
+          await _editTrackable();
+          setState(() {});
+        },
         tooltip: 'New',
         child: const Icon(Icons.add),
       ),

@@ -5,15 +5,19 @@ class TrackablesList extends StatelessWidget {
   /// Creates a new [TrackablesList].
   const TrackablesList({
     required this.trackables,
-    this.onDelete,
+    required this.onEdit,
+    required this.onDelete,
     super.key,
   });
 
   /// The set of trackables.
   final Set<String> trackables;
 
+  /// The handler when a trackable should be edited.
+  final void Function(String trackable) onEdit;
+
   /// The handler when a trackable should be deleted.
-  final void Function(String trackable)? onDelete;
+  final void Function(String trackable) onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -22,8 +26,9 @@ class TrackablesList extends StatelessWidget {
         final trackable = trackables.elementAt(index);
         return ListTile(
           title: Text(trackable),
+          onTap: () => onEdit(trackable),
           leading: IconButton(
-            onPressed: () => onDelete?.call(trackable),
+            onPressed: () => onDelete(trackable),
             icon: const Icon(Icons.delete),
           ),
         );
