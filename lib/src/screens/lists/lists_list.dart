@@ -6,7 +6,8 @@ class ListsList extends StatelessWidget {
   /// Creates a new [ListsList].
   const ListsList({
     required this.lists,
-    required this.onTap,
+    required this.onSelect,
+    required this.onEdit,
     required this.onDelete,
     required this.onExport,
     super.key,
@@ -15,10 +16,13 @@ class ListsList extends StatelessWidget {
   /// The set of lists.
   final Set<LoggyList> lists;
 
-  /// The handler when a list is tapped.
-  final void Function(LoggyList list) onTap;
+  /// The handler when a list should be selected.
+  final void Function(LoggyList list) onSelect;
 
-  /// The handler when a list is long-pressed.
+  /// The handler when a list should be edited.
+  final void Function(LoggyList list) onEdit;
+
+  /// The handler when a list should be deleted.
   final void Function(LoggyList list) onDelete;
 
   /// The handler when a list should be exported.
@@ -31,14 +35,24 @@ class ListsList extends StatelessWidget {
         final list = lists.elementAt(index);
         return ListTile(
           title: Text(list.name),
-          onTap: () => onTap(list),
+          onTap: () => onSelect(list),
           leading: IconButton(
             onPressed: () => onDelete(list),
             icon: const Icon(Icons.delete),
           ),
-          trailing: IconButton(
-            onPressed: () => onExport(list),
-            icon: const Icon(Icons.copy),
+          trailing: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                onPressed: () => onEdit(list),
+                icon: const Icon(Icons.edit),
+              ),
+              IconButton(
+                onPressed: () => onExport(list),
+                icon: const Icon(Icons.copy),
+              ),
+            ],
           ),
         );
       },

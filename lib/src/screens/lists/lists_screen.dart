@@ -24,14 +24,15 @@ class _ListsScreenState extends State<ListsScreen>
     with AutomaticKeepAliveClientMixin {
   late final _listStorage = context.read<ListStorage>();
 
-  Future<void> _addList() async {
-    final newListName = await showDialog<String?>(
+  Future<void> _editList({LoggyList? initialList}) async {
+    final newName = await showDialog<String?>(
       context: context,
       builder: (context) {
         final editController = TextEditingController();
+        if (initialList != null) editController.text = initialList.name;
 
         return AlertDialog(
-          title: const Text('Add'),
+          title: Text(initialList == null ? 'Add' : 'Edit'),
           content: TextField(
             controller: editController,
             onSubmitted: (text) => Navigator.pop(context, text),
@@ -53,9 +54,18 @@ class _ListsScreenState extends State<ListsScreen>
       },
     );
 
-    if (newListName == null) return;
+    if (newName == null || newName == initialList?.name) return;
 
-    final newList = LoggyList(name: newListName);
+    final newList = LoggyList(name: newName);
+
+    // If edited, delete the old list first.
+    if (initialList != null) {
+      await _listStorage.deleteList(initialList);
+
+      // Add old entries and trackables to the new list.
+      newList.entries.addAll(initialList.entries);
+      newList.trackables.addAll(initialList.trackables);
+    }
 
     await _listStorage.addList(newList);
 
@@ -168,13 +178,14 @@ class _ListsScreenState extends State<ListsScreen>
       ),
       body: ListsList(
         lists: _listStorage.lists,
-        onTap: _selectList,
+        onSelect: _selectList,
+        onEdit: (list) => _editList(initialList: list),
         onDelete: _deleteList,
         onExport: _exportList,
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'lists_new',
-        onPressed: _addList,
+        onPressed: _editList,
         tooltip: 'New',
         child: const Icon(Icons.add),
       ),
