@@ -68,17 +68,16 @@ class LoggyList {
         .toSet();
 
     for (final entry in affectedEntries) {
-      // Remove the existing entry.
-      entries.remove(entry);
-
-      // Remove the trackable from the entry.
-      entry.trackables!.remove(oldTrackable);
+      final entryRef = entries.lookup(entry);
+      if (entryRef == null) return;
 
       // If a new trackable is specified, add it. Otherwise, keep it deleted.
-      if (newTrackable != null) entry.trackables!.add(newTrackable);
-
-      // Add the updated entry.
-      entries.add(entry);
+      if (newTrackable != null) {
+        final trackableIndex = entryRef.trackables!.indexOf(oldTrackable);
+        entryRef.trackables![trackableIndex] = newTrackable;
+      } else {
+        entryRef.trackables!.remove(oldTrackable);
+      }
     }
   }
 
