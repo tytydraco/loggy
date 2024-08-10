@@ -56,6 +56,27 @@ class LoggyList {
     (e1, e2) => e1.compareTo(e2),
   );
 
+  /// Rename a trackable and update all entries to accommodate.
+  void renameTrackableInEntries(String oldTrackable, String? newTrackable) {
+    final affectedEntries = entries
+        .where((e) => e.trackables?.contains(oldTrackable) ?? false)
+        .toSet();
+
+    for (final entry in affectedEntries) {
+      // Remove the existing entry.
+      entries.remove(entry);
+
+      // Remove the trackable from the entry.
+      entry.trackables!.remove(oldTrackable);
+
+      // If a new trackable is specified, add it. Otherwise, keep it deleted.
+      if (newTrackable != null) entry.trackables!.add(newTrackable);
+
+      // Add the updated entry.
+      entries.add(entry);
+    }
+  }
+
   /// Converts the entry to a JSON object.
   Map<String, dynamic> toJson() => _$LoggyListToJson(this);
 
