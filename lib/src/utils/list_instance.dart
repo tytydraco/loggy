@@ -19,7 +19,7 @@ class ListInstance with ChangeNotifier {
     if (kDebugMode) print('ListInstance::save called on "${list.name}"');
 
     // Replace old list with new list.
-    await listStorage.updateList(list);
+    await listStorage.replaceList(list);
 
     notifyListeners();
   }

@@ -56,18 +56,13 @@ class _ListsScreenState extends State<ListsScreen>
 
     if (newName == null || newName == initialList?.name) return;
 
-    final newList = LoggyList(name: newName);
-
     // If edited, delete the old list first.
     if (initialList != null) {
-      await _listStorage.deleteList(initialList);
-
-      // Add old entries and trackables to the new list.
-      newList.entries.addAll(initialList.entries);
-      newList.trackables.addAll(initialList.trackables);
+      await _listStorage.renameList(initialList, newName);
+    } else {
+      final newList = LoggyList(name: newName);
+      await _listStorage.addList(newList);
     }
-
-    await _listStorage.addList(newList);
 
     setState(() {});
   }
@@ -142,7 +137,7 @@ class _ListsScreenState extends State<ListsScreen>
       final list = LoggyList.fromJson(listJson);
 
       // Replace if exists already.
-      await _listStorage.updateList(list);
+      await _listStorage.replaceList(list);
       setState(() {});
 
       if (mounted) {

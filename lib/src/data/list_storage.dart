@@ -55,8 +55,22 @@ class ListStorage {
     await setAllLists(lists);
   }
 
-  /// Replace a list with a new instance of itself.
-  Future<void> updateList(LoggyList list) async {
+  /// Rename a list.
+  Future<void> renameList(LoggyList list, String newName) async {
+    // Remove the old list from the set.
+    await deleteList(list);
+
+    // Add old entries and trackables to the new list.
+    final newList = LoggyList(name: newName);
+    newList.entries.addAll(list.entries);
+    newList.trackables.addAll(list.trackables);
+
+    // Add the renamed list to the set.
+    await addList(newList);
+  }
+
+  /// Replace a list with a new instance of itself in respect to the list name.
+  Future<void> replaceList(LoggyList list) async {
     lists
       ..removeWhere((e) => e.name == list.name)
       ..add(list);
