@@ -148,7 +148,7 @@ class _ListsScreenState extends State<ListsScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Imported trackables from clipboard.'),
+            content: Text('Imported list from clipboard.'),
           ),
         );
       }
