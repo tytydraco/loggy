@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:loggy/src/models/rating.dart';
@@ -9,11 +11,13 @@ part 'entry.g.dart';
 @JsonSerializable()
 class Entry {
   /// Creates a new [Entry].
-  const Entry({
+  Entry({
     required this.timestamp,
     required this.rating,
-    this.trackables,
-  });
+    Set<String>? initialTrackables,
+  }) {
+    if (initialTrackables != null) trackables.addAll(initialTrackables);
+  }
 
   /// Creates a new [Entry] from a JSON map.
   factory Entry.fromJson(Map<String, dynamic> json) => _$EntryFromJson(json);
@@ -25,8 +29,23 @@ class Entry {
   /// The rating value.
   final Rating rating;
 
-  /// The list of trackables.
-  final List<String>? trackables;
+  /// The entry trackables.
+  Set<String> get trackables => _sortedTrackables;
+
+  set trackables(Set<String> trackables) {
+    final newSortedTrackables = SplayTreeSet<String>.from(
+      trackables,
+      (e1, e2) => e1.compareTo(e2),
+    );
+
+    _sortedTrackables
+      ..clear()
+      ..addAll(newSortedTrackables);
+  }
+
+  final _sortedTrackables = SplayTreeSet<String>(
+    (e1, e2) => e1.compareTo(e2),
+  );
 
   /// Converts the entry to a JSON object.
   Map<String, dynamic> toJson() => _$EntryToJson(this);
@@ -37,7 +56,7 @@ class Entry {
       other.runtimeType == runtimeType &&
       other.timestamp == timestamp &&
       other.rating == rating &&
-      listEquals(other.trackables, trackables);
+      setEquals(other.trackables, trackables);
 
   @override
   int get hashCode => Object.hash(timestamp, rating, trackables);

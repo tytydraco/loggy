@@ -33,7 +33,7 @@ class _EditScreenState extends State<EditScreen> {
   final _dateStringFormatter = DateFormat.yMMMMd().add_jm();
 
   late final _trackablesChecked = widget.initialEntry?.trackables != null
-      ? {for (var t in widget.initialEntry!.trackables!) t: true}
+      ? {for (var t in widget.initialEntry!.trackables) t: true}
       : <String, bool>{};
 
   Future<DateTime?> _selectTimestamp(DateTime initial) async {
@@ -105,13 +105,13 @@ class _EditScreenState extends State<EditScreen> {
     }
   }
 
-  List<String>? _getCheckedTrackables() {
+  Set<String>? _getCheckedTrackables() {
     if (_trackablesChecked.isEmpty) return null;
 
     return _trackablesChecked.entries
         .where((element) => element.value)
         .map((e) => e.key)
-        .toList();
+        .toSet();
   }
 
   Entry? _getEditedEntry() {
@@ -120,7 +120,7 @@ class _EditScreenState extends State<EditScreen> {
     return Entry(
       timestamp: _date,
       rating: defaultRatingScale[_ratingIndex!],
-      trackables: _getCheckedTrackables(),
+      initialTrackables: _getCheckedTrackables(),
     );
   }
 
