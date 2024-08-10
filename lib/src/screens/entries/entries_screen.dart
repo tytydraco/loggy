@@ -20,20 +20,6 @@ class _EntriesScreenState extends State<EntriesScreen>
     with AutomaticKeepAliveClientMixin {
   late final _listInstance = context.read<ListInstance>();
 
-  /// Called when the list is updated for any reason. Refresh the screen to
-  /// provide updated analysis.
-  void _listInstanceListener() {
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Listen for changes made to the list to update the entries.
-    _listInstance.addListener(_listInstanceListener);
-  }
-
   /// Edit an existing entry or create a new one by passing null as the [entry].
   Future<void> _editEntry({Entry? entry}) async {
     // Take user to the edit screen to create a new entry.
@@ -96,15 +82,19 @@ class _EntriesScreenState extends State<EntriesScreen>
       appBar: AppBar(
         title: const Text('Entries'),
       ),
-      body: ListView.separated(
-        itemCount: _listInstance.list.entries.length,
-        separatorBuilder: (_, __) => const Divider(),
-        itemBuilder: (_, index) {
-          final entry = _listInstance.list.entries.elementAt(index);
-          return EntryItem(
-            entry,
-            onEdit: () => _editEntry(entry: entry),
-            onDelete: () => _deleteEntry(entry),
+      body: Consumer<ListInstance>(
+        builder: (context, listInstance, _) {
+          return ListView.separated(
+            itemCount: listInstance.list.entries.length,
+            separatorBuilder: (_, __) => const Divider(),
+            itemBuilder: (_, index) {
+              final entry = listInstance.list.entries.elementAt(index);
+              return EntryItem(
+                entry,
+                onEdit: () => _editEntry(entry: entry),
+                onDelete: () => _deleteEntry(entry),
+              );
+            },
           );
         },
       ),
@@ -115,12 +105,6 @@ class _EntriesScreenState extends State<EntriesScreen>
         child: const Icon(Icons.add),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _listInstance.removeListener(_listInstanceListener);
-    super.dispose();
   }
 
   @override
