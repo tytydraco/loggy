@@ -16,7 +16,7 @@ class ListInstance with ChangeNotifier {
 
   /// Update list entry in the database.
   Future<void> save() async {
-    if (kDebugMode) print('ListSaveNotifier::save called on "${list.name}"');
+    if (kDebugMode) print('ListInstance::save called on "${list.name}"');
 
     // Replace old list with new list.
     await listStorage.updateList(list);
