@@ -48,18 +48,14 @@ class _TrackablesScreenState extends State<TrackablesScreen>
 
     if (newTrackable == null || newTrackable == initialTrackable) return;
 
-    // If edited, delete the old trackable first.
+    // If edited, rename the trackable. Otherwise, just add it.
     if (initialTrackable != null) {
-      _listInstance.list.trackables.remove(initialTrackable);
-
-      // Update entries for new trackable.
-      _listInstance.list
-          .renameTrackableInEntries(initialTrackable, newTrackable);
+      _listInstance.list.renameTrackable(initialTrackable, newTrackable);
+    } else {
+      _listInstance.list.trackables.add(newTrackable);
     }
 
-    setState(() {
-      _listInstance.list.trackables.add(newTrackable);
-    });
+    setState(() {});
 
     await _listInstance.save();
   }
@@ -89,7 +85,7 @@ class _TrackablesScreenState extends State<TrackablesScreen>
     if (!confirmed) return;
 
     // Update entries for deleted trackable.
-    _listInstance.list.renameTrackableInEntries(trackable, null);
+    _listInstance.list.renameTrackable(trackable, null);
 
     setState(() {
       _listInstance.list.trackables.remove(trackable);

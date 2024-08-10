@@ -57,7 +57,12 @@ class LoggyList {
   );
 
   /// Rename a trackable and update all entries to accommodate.
-  void renameTrackableInEntries(String oldTrackable, String? newTrackable) {
+  void renameTrackable(String oldTrackable, String? newTrackable) {
+    // Rename within the trackables set.
+    trackables.remove(oldTrackable);
+    if (newTrackable != null) trackables.add(newTrackable);
+
+    // Update existing entries for the new renamed trackable.
     final affectedEntries = entries
         .where((e) => e.trackables?.contains(oldTrackable) ?? false)
         .toSet();
