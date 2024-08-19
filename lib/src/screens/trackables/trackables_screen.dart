@@ -18,39 +18,61 @@ class _TrackablesScreenState extends State<TrackablesScreen>
   late final _listInstance = context.read<ListInstance>();
 
   Future<void> _editTrackable({Trackable? initialTrackable}) async {
+    final editController = TextEditingController();
+    if (initialTrackable != null) {
+      editController.text = initialTrackable.name;
+    }
+    var boolean = initialTrackable?.boolean ?? false;
+
     final newTrackable = await showDialog<Trackable?>(
       context: context,
       builder: (context) {
-        final editController = TextEditingController();
-        if (initialTrackable != null) {
-          editController.text = initialTrackable.name;
-        }
+        return StatefulBuilder(
+          builder: (context, setState) {
+            Trackable getTrackable() {
+              return Trackable(
+                name: editController.text,
+                boolean: boolean,
+              );
+            }
 
-        return AlertDialog(
-          title: Text(initialTrackable == null ? 'Add' : 'Edit'),
-          content: TextField(
-            controller: editController,
-            onSubmitted: (text) => Navigator.pop(
-              context,
-              Trackable(name: editController.text, boolean: true),
-            ),
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(
-                context,
-                Trackable(name: editController.text, boolean: true),
+            return AlertDialog(
+              title: Text(initialTrackable == null ? 'Add' : 'Edit'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Name field.
+                  TextField(
+                    controller: editController,
+                    onSubmitted: (text) =>
+                        Navigator.pop(context, getTrackable()),
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+
+                  // Boolean checkbox.
+                  CheckboxListTile(
+                    value: boolean,
+                    title: const Text('Boolean value'),
+                    onChanged: (value) => setState(() {
+                      boolean = value ?? false;
+                    }),
+                  ),
+                ],
               ),
-              child: const Text('Save'),
-            ),
-          ],
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context, getTrackable()),
+                  child: const Text('Save'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
