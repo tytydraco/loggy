@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:loggy/src/models/rating.dart';
+import 'package:loggy/src/models/trackable.dart';
 
 part 'entry.g.dart';
 

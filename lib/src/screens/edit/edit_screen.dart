@@ -156,7 +156,7 @@ class _EditScreenState extends State<EditScreen> {
       itemBuilder: (_, index) {
         final trackable = widget.list.trackables.elementAt(index);
         return ListTile(
-          title: Text(trackable),
+          title: Text(trackable.name),
           trailing: SizedBox(
             width: 100,
             child: TextFormField(
@@ -164,15 +164,15 @@ class _EditScreenState extends State<EditScreen> {
               onChanged: (value) {
                 final newValue = double.tryParse(value);
                 if (newValue == null) {
-                  _entryValues.remove(trackable);
+                  _entryValues.remove(trackable.name);
                   return;
                 }
 
                 setState(() {
-                  _entryValues[trackable] = newValue;
+                  _entryValues[trackable.name] = newValue;
                 });
               },
-              initialValue: _entryValues[trackable]?.toString() ?? '',
+              initialValue: _entryValues[trackable.name]?.toString() ?? '',
             ),
           ),
         );

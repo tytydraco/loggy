@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loggy/src/models/trackable.dart';
 
 /// The list of existing trackables.
 class TrackablesList extends StatelessWidget {
@@ -11,13 +12,13 @@ class TrackablesList extends StatelessWidget {
   });
 
   /// The set of trackables.
-  final Set<String> trackables;
+  final Set<Trackable> trackables;
 
   /// The handler when a trackable should be edited.
-  final void Function(String trackable) onEdit;
+  final void Function(Trackable trackable) onEdit;
 
   /// The handler when a trackable should be deleted.
-  final void Function(String trackable) onDelete;
+  final void Function(Trackable trackable) onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +26,7 @@ class TrackablesList extends StatelessWidget {
       itemBuilder: (_, index) {
         final trackable = trackables.elementAt(index);
         return ListTile(
-          title: Text(trackable),
+          title: Text(trackable.name),
           onTap: () => onEdit(trackable),
           leading: IconButton(
             onPressed: () => onDelete(trackable),

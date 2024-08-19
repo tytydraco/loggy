@@ -47,7 +47,7 @@ class _AnalysisScreenState extends State<AnalysisScreen>
               }
 
               return ListTile(
-                title: Text(data.key),
+                title: Text(data.key.name),
                 trailing: Text(
                   prettyPercentage,
                   style: TextStyle(

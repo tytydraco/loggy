@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:loggy/src/models/entry.dart';
+import 'package:loggy/src/models/trackable.dart';
 
 /// Calculate correlations of data.
 class TrackablesCorrelations {
@@ -20,8 +21,8 @@ class TrackablesCorrelations {
   }
 
   /// Calculate the correlation coefficient for a single trackable.
-  double calculateFor(String trackable) {
-    final x = entries.map((e) => e.values[trackable] ?? 0).toList();
+  double calculateFor(Trackable trackable) {
+    final x = entries.map((e) => e.values[trackable.name] ?? 0).toList();
     final y = entries.map((e) => e.rating.value.toDouble()).toList();
 
     // No data yet.
@@ -44,10 +45,10 @@ class TrackablesCorrelations {
   }
 
   /// Calculate the correlation coefficient for all trackables.
-  Map<String, double> calculateAll(Iterable<String> trackables) {
+  Map<Trackable, double> calculateAll(Iterable<Trackable> trackables) {
     return Map.fromIterable(
       trackables,
-      value: (e) => calculateFor(e as String),
+      value: (e) => calculateFor(e as Trackable),
     );
   }
 }

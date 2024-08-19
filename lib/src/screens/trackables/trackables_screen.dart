@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loggy/src/models/trackable.dart';
 import 'package:loggy/src/screens/trackables/trackables_list.dart';
 import 'package:loggy/src/utils/list_instance.dart';
 import 'package:provider/provider.dart';
@@ -16,18 +17,23 @@ class _TrackablesScreenState extends State<TrackablesScreen>
     with AutomaticKeepAliveClientMixin {
   late final _listInstance = context.read<ListInstance>();
 
-  Future<void> _editTrackable({String? initialTrackable}) async {
-    final newTrackable = await showDialog<String?>(
+  Future<void> _editTrackable({Trackable? initialTrackable}) async {
+    final newTrackable = await showDialog<Trackable?>(
       context: context,
       builder: (context) {
         final editController = TextEditingController();
-        if (initialTrackable != null) editController.text = initialTrackable;
+        if (initialTrackable != null) {
+          editController.text = initialTrackable.name;
+        }
 
         return AlertDialog(
           title: Text(initialTrackable == null ? 'Add' : 'Edit'),
           content: TextField(
             controller: editController,
-            onSubmitted: (text) => Navigator.pop(context, text),
+            onSubmitted: (text) => Navigator.pop(
+              context,
+              Trackable(name: editController.text, boolean: true),
+            ),
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
             ),
@@ -38,7 +44,10 @@ class _TrackablesScreenState extends State<TrackablesScreen>
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () => Navigator.pop(context, editController.text),
+              onPressed: () => Navigator.pop(
+                context,
+                Trackable(name: editController.text, boolean: true),
+              ),
               child: const Text('Save'),
             ),
           ],
@@ -60,7 +69,7 @@ class _TrackablesScreenState extends State<TrackablesScreen>
     await _listInstance.save();
   }
 
-  Future<void> _deleteTrackable(String trackable) async {
+  Future<void> _deleteTrackable(Trackable trackable) async {
     final confirmed = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(

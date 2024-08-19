@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:loggy/src/models/entry.dart';
+import 'package:loggy/src/models/trackable.dart';
 
 part 'loggy_list.g.dart';
 
@@ -35,12 +36,12 @@ class LoggyList {
   }
 
   /// The list trackables.
-  Set<String> get trackables => _sortedTrackables;
+  Set<Trackable> get trackables => _sortedTrackables;
 
-  set trackables(Set<String> trackables) {
-    final newSortedTrackables = SplayTreeSet<String>.from(
+  set trackables(Set<Trackable> trackables) {
+    final newSortedTrackables = SplayTreeSet<Trackable>.from(
       trackables,
-      (e1, e2) => e1.compareTo(e2),
+      (e1, e2) => e1.name.compareTo(e2.name),
     );
 
     _sortedTrackables
@@ -52,29 +53,29 @@ class LoggyList {
     (e1, e2) => e2.timestamp.compareTo(e1.timestamp),
   );
 
-  final _sortedTrackables = SplayTreeSet<String>(
-    (e1, e2) => e1.compareTo(e2),
+  final _sortedTrackables = SplayTreeSet<Trackable>(
+    (e1, e2) => e1.name.compareTo(e2.name),
   );
 
   /// Rename a trackable and update all entries to accommodate.
-  void renameTrackable(String oldTrackable, String? newTrackable) {
+  void renameTrackable(Trackable oldTrackable, Trackable? newTrackable) {
     // Rename within the trackables set.
     trackables.remove(oldTrackable);
     if (newTrackable != null) trackables.add(newTrackable);
 
     // Update existing entries for the new renamed trackable.
     final affectedEntries =
-        entries.where((e) => e.values.containsKey(oldTrackable)).toSet();
+        entries.where((e) => e.values.containsKey(oldTrackable.name)).toSet();
 
     for (final entry in affectedEntries) {
       final entryRef = entries.lookup(entry);
-      final oldTrackableValue = entryRef?.values[oldTrackable];
+      final oldTrackableValue = entryRef?.values[oldTrackable.name];
       if (entryRef == null || oldTrackableValue == null) return;
 
       // If a new trackable is specified, add it. Otherwise, keep it deleted.
-      entryRef.values.remove(oldTrackable);
+      entryRef.values.remove(oldTrackable.name);
       if (newTrackable != null) {
-        entryRef.values[newTrackable] = oldTrackableValue;
+        entryRef.values[newTrackable.name] = oldTrackableValue;
       }
     }
   }
