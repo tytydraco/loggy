@@ -103,7 +103,7 @@ class _EditScreenState extends State<EditScreen> {
     }
   }
 
-  Map<String, double>? _getEntryValues() {
+  Map<String, double?>? _getEntryValues() {
     if (_entryValues.isEmpty) return null;
     return _entryValues;
   }
@@ -163,18 +163,16 @@ class _EditScreenState extends State<EditScreen> {
               textAlign: TextAlign.center,
               onChanged: (value) {
                 final newValue = double.tryParse(value);
-                if (newValue == null) return;
+                if (newValue == null) {
+                  _entryValues.remove(trackable);
+                  return;
+                }
 
                 setState(() {
                   _entryValues[trackable] = newValue;
                 });
               },
-              initialValue: _entryValues
-                  .putIfAbsent(
-                    trackable,
-                    () => 0,
-                  )
-                  .toString(),
+              initialValue: _entryValues[trackable]?.toString() ?? '',
             ),
           ),
         );
