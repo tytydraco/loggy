@@ -14,7 +14,7 @@ class Entry {
   Entry({
     required this.timestamp,
     required this.rating,
-    Map<String, double>? initialValues,
+    Map<String, double?>? initialValues,
   }) {
     if (initialValues != null) values.addAll(initialValues);
   }
@@ -30,10 +30,10 @@ class Entry {
   final Rating rating;
 
   /// The entry values.
-  Map<String, double> get values => _sortedValues;
+  Map<String, double?> get values => _sortedValues;
 
-  set values(Map<String, double> trackables) {
-    final newSortedTrackables = SplayTreeMap<String, double>.from(
+  set values(Map<String, double?> trackables) {
+    final newSortedTrackables = SplayTreeMap<String, double?>.from(
       trackables,
       (e1, e2) => e1.compareTo(e2),
     );
@@ -43,7 +43,7 @@ class Entry {
       ..addAll(newSortedTrackables);
   }
 
-  final _sortedValues = SplayTreeMap<String, double>(
+  final _sortedValues = SplayTreeMap<String, double?>(
     (e1, e2) => e1.compareTo(e2),
   );
 
