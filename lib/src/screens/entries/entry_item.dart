@@ -29,7 +29,7 @@ class EntryItem extends StatelessWidget {
     return InkWell(
       onTap: onEdit,
       child: ListTile(
-        title: Text(entry.trackables?.join(', ') ?? ''),
+        title: Text(entry.values.keys.join(', ')),
         leading: IconButton(
           onPressed: () => onDelete?.call(),
           icon: const Icon(Icons.delete),

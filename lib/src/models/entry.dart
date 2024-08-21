@@ -14,9 +14,9 @@ class Entry {
   Entry({
     required this.timestamp,
     required this.rating,
-    Set<String>? initialTrackables,
+    Map<String, double>? initialValues,
   }) {
-    if (initialTrackables != null) trackables.addAll(initialTrackables);
+    if (initialValues != null) values.addAll(initialValues);
   }
 
   /// Creates a new [Entry] from a JSON map.
@@ -29,21 +29,21 @@ class Entry {
   /// The rating value.
   final Rating rating;
 
-  /// The entry trackables.
-  Set<String> get trackables => _sortedTrackables;
+  /// The entry values.
+  Map<String, double> get values => _sortedValues;
 
-  set trackables(Set<String> trackables) {
-    final newSortedTrackables = SplayTreeSet<String>.from(
+  set values(Map<String, double> trackables) {
+    final newSortedTrackables = SplayTreeMap<String, double>.from(
       trackables,
       (e1, e2) => e1.compareTo(e2),
     );
 
-    _sortedTrackables
+    _sortedValues
       ..clear()
       ..addAll(newSortedTrackables);
   }
 
-  final _sortedTrackables = SplayTreeSet<String>(
+  final _sortedValues = SplayTreeMap<String, double>(
     (e1, e2) => e1.compareTo(e2),
   );
 
@@ -56,10 +56,10 @@ class Entry {
       other.runtimeType == runtimeType &&
       other.timestamp == timestamp &&
       other.rating == rating &&
-      setEquals(other.trackables, trackables);
+      mapEquals(other.values, values);
 
   @override
-  int get hashCode => Object.hash(timestamp, rating, trackables);
+  int get hashCode => Object.hash(timestamp, rating, values);
 }
 
 class _TimestampJsonConverter extends JsonConverter<DateTime, int> {

@@ -11,7 +11,7 @@ class TrackablesCorrelations {
   /// Entries to use.
   final Iterable<Entry> entries;
 
-  double _stdDev(List<int> nums) {
+  double _stdDev(List<double> nums) {
     if (nums.length <= 1) return 0;
 
     final squaredDiffs = nums.map((e) => pow(e - nums.average, 2)).toList();
@@ -21,10 +21,8 @@ class TrackablesCorrelations {
 
   /// Calculate the correlation coefficient for a single trackable.
   double calculateFor(String trackable) {
-    final x = entries
-        .map((e) => (e.trackables?.contains(trackable) ?? false) ? 1 : 0)
-        .toList();
-    final y = entries.map((e) => e.rating.value).toList();
+    final x = entries.map((e) => e.values[trackable] ?? 0).toList();
+    final y = entries.map((e) => e.rating.value.toDouble()).toList();
 
     // No data yet.
     if (x.isEmpty || y.isEmpty) return 0;

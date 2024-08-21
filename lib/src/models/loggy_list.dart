@@ -64,15 +64,18 @@ class LoggyList {
 
     // Update existing entries for the new renamed trackable.
     final affectedEntries =
-        entries.where((e) => e.trackables.contains(oldTrackable)).toSet();
+        entries.where((e) => e.values.containsKey(oldTrackable)).toSet();
 
     for (final entry in affectedEntries) {
       final entryRef = entries.lookup(entry);
-      if (entryRef == null) return;
+      final oldTrackableValue = entryRef?.values[oldTrackable];
+      if (entryRef == null || oldTrackableValue == null) return;
 
       // If a new trackable is specified, add it. Otherwise, keep it deleted.
-      entryRef.trackables.remove(oldTrackable);
-      if (newTrackable != null) entryRef.trackables.add(newTrackable);
+      entryRef.values.remove(oldTrackable);
+      if (newTrackable != null) {
+        entryRef.values[newTrackable] = oldTrackableValue;
+      }
     }
   }
 
