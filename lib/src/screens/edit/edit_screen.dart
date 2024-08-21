@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:loggy/src/data/constants.dart';
 import 'package:loggy/src/models/entry.dart';
 import 'package:loggy/src/models/loggy_list.dart';
+import 'package:loggy/src/models/trackable.dart';
 import 'package:loggy/src/screens/edit/rating_toggle_group.dart';
 
 /// Edit an entry or add a new one.
@@ -151,32 +152,47 @@ class _EditScreenState extends State<EditScreen> {
     );
   }
 
+  Widget _buildTrackableListTile(Trackable trackable) {
+    if (trackable.boolean) {
+      return CheckboxListTile(
+        title: Text(trackable.name),
+        value: _entryValues[trackable.name] != 0,
+        onChanged: (value) {
+          setState(() {
+            _entryValues[trackable.name] = (value ?? false) ? 1 : 0;
+          });
+        },
+      );
+    } else {
+      return ListTile(
+        title: Text(trackable.name),
+        trailing: SizedBox(
+          width: 100,
+          child: TextFormField(
+            textAlign: TextAlign.center,
+            onChanged: (value) {
+              final newValue = double.tryParse(value);
+              if (newValue == null) {
+                _entryValues.remove(trackable.name);
+                return;
+              }
+
+              setState(() {
+                _entryValues[trackable.name] = newValue;
+              });
+            },
+            initialValue: _entryValues[trackable.name]?.toString() ?? '',
+          ),
+        ),
+      );
+    }
+  }
+
   Widget _buildTrackablesSelector() {
     return ListView.separated(
-      itemBuilder: (_, index) {
-        final trackable = widget.list.trackables.elementAt(index);
-        return ListTile(
-          title: Text(trackable.name),
-          trailing: SizedBox(
-            width: 100,
-            child: TextFormField(
-              textAlign: TextAlign.center,
-              onChanged: (value) {
-                final newValue = double.tryParse(value);
-                if (newValue == null) {
-                  _entryValues.remove(trackable.name);
-                  return;
-                }
-
-                setState(() {
-                  _entryValues[trackable.name] = newValue;
-                });
-              },
-              initialValue: _entryValues[trackable.name]?.toString() ?? '',
-            ),
-          ),
-        );
-      },
+      itemBuilder: (_, index) => _buildTrackableListTile(
+        widget.list.trackables.elementAt(index),
+      ),
       separatorBuilder: (_, __) => const Divider(),
       itemCount: widget.list.trackables.length,
     );
