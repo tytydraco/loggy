@@ -11,7 +11,7 @@ Entry _$EntryFromJson(Map<String, dynamic> json) => Entry(
           .fromJson((json['timestamp'] as num).toInt()),
       rating: Rating.fromJson(json['rating'] as Map<String, dynamic>),
     )..values = (json['values'] as Map<String, dynamic>).map(
-        (k, e) => MapEntry(k, (e as num).toDouble()),
+        (k, e) => MapEntry(k, (e as num?)?.toDouble()),
       );
 
 Map<String, dynamic> _$EntryToJson(Entry instance) => <String, dynamic>{
