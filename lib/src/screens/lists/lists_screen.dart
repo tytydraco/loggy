@@ -6,7 +6,7 @@ import 'package:loggy/src/data/list_storage.dart';
 import 'package:loggy/src/models/loggy_list.dart';
 import 'package:loggy/src/screens/home/home_screen.dart';
 import 'package:loggy/src/screens/lists/lists_list.dart';
-import 'package:loggy/src/utils/list_export_import.dart';
+import 'package:loggy/src/utils/list_export_import/list_export_import.dart';
 import 'package:loggy/src/utils/list_instance.dart';
 import 'package:provider/provider.dart';
 
