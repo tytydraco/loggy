@@ -161,7 +161,7 @@ class _ListsScreenState extends State<ListsScreen>
         actions: [
           IconButton(
             onPressed: _importList,
-            icon: const Icon(Icons.paste),
+            icon: const Icon(Icons.upload),
           ),
         ],
       ),

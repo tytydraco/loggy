@@ -50,7 +50,7 @@ class ListsList extends StatelessWidget {
               ),
               IconButton(
                 onPressed: () => onExport(list),
-                icon: const Icon(Icons.copy),
+                icon: const Icon(Icons.file_download),
               ),
             ],
           ),
