@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:loggy/src/models/loggy_list.dart';
 import 'package:web/web.dart' as web;
 
+/// Exports the [list] as a JSON file.
 Future<void> exportListToFile(LoggyList list) async {
   final json = jsonEncode(list);
   final jsonBytes = utf8.encode(json);

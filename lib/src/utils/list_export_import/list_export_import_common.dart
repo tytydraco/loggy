@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:loggy/src/models/loggy_list.dart';
 
+/// Exports the [list] as a JSON file.
 Future<void> exportListToFile(LoggyList list) async {
   final json = jsonEncode(list);
   final jsonBytes = utf8.encode(json);
@@ -25,7 +26,7 @@ Future<void> exportListToFile(LoggyList list) async {
   }
 }
 
-@override
+/// Imports a JSON file as a list.
 Future<LoggyList?> importFileAsList() async {
   final inputFileResult = await FilePicker.platform.pickFiles(
     allowedExtensions: ['json'],
