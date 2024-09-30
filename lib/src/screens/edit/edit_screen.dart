@@ -158,12 +158,16 @@ class _EditScreenState extends State<EditScreen> {
         return ListTile(
           title: Text(trackable),
           trailing: SizedBox(
-            width: 100,
+            width: 50,
             child: TextFormField(
               textAlign: TextAlign.center,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
                 signed: true,
+              ),
+              decoration: const InputDecoration(
+                hintText: '-',
+                border: InputBorder.none,
               ),
               onChanged: (value) {
                 final newValue = double.tryParse(value);
