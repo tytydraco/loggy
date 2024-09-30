@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:loggy/src/data/list_storage.dart';
 import 'package:loggy/src/models/loggy_list.dart';
@@ -142,7 +141,7 @@ class _ListsScreenState extends State<ListsScreen>
         );
       }
     } catch (e) {
-      if (kDebugMode) print(e);
+      print(e);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

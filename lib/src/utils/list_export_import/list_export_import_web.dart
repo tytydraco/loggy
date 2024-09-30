@@ -24,6 +24,7 @@ Future<void> exportListToFile(LoggyList list) async {
   web.URL.revokeObjectURL(url);
 }
 
+/// Imports a JSON file as a list.
 Future<LoggyList?> importFileAsList() async {
   final inputFileResult = await FilePicker.platform.pickFiles(
     allowedExtensions: ['json'],
