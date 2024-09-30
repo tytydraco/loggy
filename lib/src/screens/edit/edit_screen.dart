@@ -161,6 +161,10 @@ class _EditScreenState extends State<EditScreen> {
             width: 100,
             child: TextFormField(
               textAlign: TextAlign.center,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+                signed: true,
+              ),
               onChanged: (value) {
                 final newValue = double.tryParse(value);
                 if (newValue == null) {
