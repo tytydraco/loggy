@@ -1,11 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:loggy/src/data/list_storage.dart';
 import 'package:loggy/src/models/loggy_list.dart';
 import 'package:loggy/src/screens/home/home_screen.dart';
 import 'package:loggy/src/screens/lists/lists_list.dart';
-import 'package:loggy/src/utils/list_export_import/list_export_import.dart';
 import 'package:loggy/src/utils/list_instance.dart';
 import 'package:provider/provider.dart';
 
@@ -112,22 +114,27 @@ class _ListsScreenState extends State<ListsScreen>
 
   /// Exports a list to clipboard.
   Future<void> _exportList(LoggyList list) async {
-    await exportListToFile(list);
+    final json = jsonEncode(list);
+    final base64 = base64Encode(utf8.encode(json));
+    await Clipboard.setData(ClipboardData(text: base64));
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Exported list as file.')),
+        const SnackBar(content: Text('Copied list to clipboard.')),
       );
     }
   }
 
   /// Exports a list from clipboard.
   Future<void> _importList() async {
-    try {
-      final list = await importFileAsList();
+    final clipboardData = await Clipboard.getData('text/plain');
 
-      // Skip if we didn't pick a file.
-      if (list == null) return;
+    try {
+      final base64 = clipboardData!.text!;
+
+      final json = utf8.decode(base64Decode(base64));
+      final listJson = jsonDecode(json) as Map<String, dynamic>;
+      final list = LoggyList.fromJson(listJson);
 
       // Replace if exists already.
       await _listStorage.replaceList(list);
@@ -136,16 +143,16 @@ class _ListsScreenState extends State<ListsScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Imported list from file.'),
+            content: Text('Imported list from clipboard.'),
           ),
         );
       }
     } catch (e) {
-      print(e);
+      if (kDebugMode) print(e);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to import list.')),
+          const SnackBar(content: Text('Failed to parse clipboard.')),
         );
       }
     }
@@ -160,7 +167,7 @@ class _ListsScreenState extends State<ListsScreen>
         actions: [
           IconButton(
             onPressed: _importList,
-            icon: const Icon(Icons.upload),
+            icon: const Icon(Icons.paste),
           ),
         ],
       ),
