@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,7 @@ class ListsScreen extends StatefulWidget {
 class _ListsScreenState extends State<ListsScreen>
     with AutomaticKeepAliveClientMixin {
   late final _listStorage = context.read<ListStorage>();
+  final _gzipCodec = GZipCodec(level: 9);
 
   Future<void> _editList({LoggyList? initialList}) async {
     final newName = await showDialog<String?>(
@@ -115,12 +117,15 @@ class _ListsScreenState extends State<ListsScreen>
   /// Exports a list to clipboard.
   Future<void> _exportList(LoggyList list) async {
     final json = jsonEncode(list);
-    final base64 = base64Encode(utf8.encode(json));
+    final gzip = _gzipCodec.encode(utf8.encode(json));
+    final base64 = base64Encode(gzip);
     await Clipboard.setData(ClipboardData(text: base64));
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Copied list to clipboard.')),
+        const SnackBar(
+          content: Text('Copied list to clipboard (GZIP+Base64).'),
+        ),
       );
     }
   }
@@ -131,8 +136,8 @@ class _ListsScreenState extends State<ListsScreen>
 
     try {
       final base64 = clipboardData!.text!;
-
-      final json = utf8.decode(base64Decode(base64));
+      final gzip = _gzipCodec.decode(base64Decode(base64));
+      final json = utf8.decode(gzip);
       final listJson = jsonDecode(json) as Map<String, dynamic>;
       final list = LoggyList.fromJson(listJson);
 
