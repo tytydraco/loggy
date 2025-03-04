@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:loggy/src/models/loggy_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,6 +14,7 @@ class ListStorage {
   Set<LoggyList> lists = SplayTreeSet((t1, t2) => t1.name.compareTo(t2.name));
 
   late SharedPreferences _sharedPrefs;
+  final _gzipCodec = GZipCodec(level: 9);
 
   /// Prepare the shared preferences.
   Future<void> init() async {
@@ -22,23 +24,26 @@ class ListStorage {
 
   /// Return a set of all stored lists.
   Future<Set<LoggyList>> getAllLists() async {
-    final allListsRaw = _sharedPrefs.getStringList(listsPrefKey) ?? [];
-    final allLists = allListsRaw.map((e) {
-      final json = jsonDecode(e) as Map<String, dynamic>;
-      return LoggyList.fromJson(json);
+    final rawListEntries = _sharedPrefs.getStringList(listsPrefKey) ?? [];
+    final listEntries = rawListEntries.map((base64) {
+      final gzip = _gzipCodec.decode(base64Decode(base64));
+      final json = utf8.decode(gzip);
+      final listJson = jsonDecode(json) as Map<String, dynamic>;
+      return LoggyList.fromJson(listJson);
     });
 
-    return allLists.toSet();
+    return listEntries.toSet();
   }
 
   /// Sets all stored lists.
   Future<void> setAllLists(Set<LoggyList> newLists) async {
-    final jsonEntries = newLists.map((e) {
-      final json = e.toJson();
-      return jsonEncode(json);
+    final rawListEntries = newLists.map((list) {
+      final json = jsonEncode(list.toJson());
+      final gzip = _gzipCodec.encode(utf8.encode(json));
+      return base64Encode(gzip);
     }).toList();
 
-    await _sharedPrefs.setStringList(listsPrefKey, jsonEntries);
+    await _sharedPrefs.setStringList(listsPrefKey, rawListEntries);
   }
 
   /// Add a list.
