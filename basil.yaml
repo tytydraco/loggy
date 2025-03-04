@@ -2,6 +2,9 @@ basil:
   code_generation:
     cmds:
       - 'flutter pub run build_runner build --delete-conflicting-outputs'
+  icons:
+    cmds:
+      - 'flutter pub run icons_launcher:create'
   build_apk:
     cmds:
       - 'flutter build apk --release'
